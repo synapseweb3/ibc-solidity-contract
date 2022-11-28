@@ -1,0 +1,305 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "txHash": "0xcc403ed6c782e17e4a02957aa50f8a39ea26304eca80ee1b27e9e760fc01fcde"
+  },
+  "proxies": [
+    {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0x4a301b4bc9fa40f615f306e90ee3bd6418e854a59ef6a22a9b2afa93d5af0fde",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+      "txHash": "0xd21fbfbd01433f180adda15aa0f46067010bb9466d5c6c4bfc8da3b90d7b3acb",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      "txHash": "0x7d000fa2fbf1882825b51aed4954ab304215f3ea6e8648afd2a174f5b6a220ad",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      "txHash": "0xc7d1362129b28109216ba792baaeaaf0aa7f64bec4957fa2ec693e8f96d54799",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "txHash": "0x7e9868c03d804fa1a71e85a35c634f4ef731cd0bd053813bd48afa191590df70",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "2618156e1a08dfe1f61e6dbd47a1442dc799f3ba2a442a0fc43a2a0cae468bd2": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "txHash": "0xfd42b2d5ee4c5dfd657da94d23d9ef5591f4eb398e44dda7271d127eb5739239",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)19_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "_paused",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_bool",
+            "contract": "IBC",
+            "src": "contracts/ibc.sol:31"
+          },
+          {
+            "label": "_lightclients",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_enum(CLIENT_TYPE)2844,t_address)",
+            "contract": "IBC",
+            "src": "contracts/ibc.sol:32"
+          },
+          {
+            "label": "_id_client_types",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_string_memory_ptr,t_enum(CLIENT_TYPE)2844)",
+            "contract": "IBC",
+            "src": "contracts/ibc.sol:33"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_enum(CLIENT_TYPE)2844": {
+            "label": "enum CLIENT_TYPE",
+            "members": [
+              "Unknown",
+              "Tendermint",
+              "Ethereum",
+              "Axon",
+              "Ckb"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)19_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_enum(CLIENT_TYPE)2844,t_address)": {
+            "label": "mapping(enum CLIENT_TYPE => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_enum(CLIENT_TYPE)2844)": {
+            "label": "mapping(string => enum CLIENT_TYPE)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)19_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_string_storage": {
+            "label": "string"
+          }
+        }
+      }
+    },
+    "f5ea3c5db022ca4ca0325f01691e82e02de76e22e2dd3f76aa546b23979e1c5b": {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0x08e9df86aad47a8c588543807f019c0a6c024c91b81f03b0dcb6dfe2360b7708",
+      "layout": {
+        "solcVersion": "0.8.17",
+        "storage": [
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "Lightclient",
+            "src": "contracts/lightclients/abstract.sol:8"
+          },
+          {
+            "label": "_client_counter",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "Lightclient",
+            "src": "contracts/lightclients/abstract.sol:9"
+          },
+          {
+            "label": "_client_states",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(ClientState)3066_storage)",
+            "contract": "CkbLightclient",
+            "src": "contracts/lightclients/ckb.sol:7"
+          },
+          {
+            "label": "_consensus_states",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_string_memory_ptr,t_mapping(t_bytes32,t_struct(ConsensusState)3073_storage))",
+            "contract": "CkbLightclient",
+            "src": "contracts/lightclients/ckb.sol:8"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_enum(CLIENT_TYPE)2844": {
+            "label": "enum CLIENT_TYPE",
+            "members": [
+              "Unknown",
+              "Tendermint",
+              "Ethereum",
+              "Axon",
+              "Ckb"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_struct(ConsensusState)3073_storage)": {
+            "label": "mapping(bytes32 => struct ConsensusState)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_mapping(t_bytes32,t_struct(ConsensusState)3073_storage))": {
+            "label": "mapping(string => mapping(bytes32 => struct ConsensusState))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(ClientState)3066_storage)": {
+            "label": "mapping(string => struct ClientState)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(ClientState)3066_storage": {
+            "label": "struct ClientState",
+            "members": [
+              {
+                "label": "chain_id",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "client_type",
+                "type": "t_enum(CLIENT_TYPE)2844",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "latest_height",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "frozen_height",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "trusting_period",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "max_clock_drift",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "extra_payload",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_struct(ConsensusState)3073_storage": {
+            "label": "struct ConsensusState",
+            "members": [
+              {
+                "label": "timestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "commitment_root",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "extra_payload",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}
