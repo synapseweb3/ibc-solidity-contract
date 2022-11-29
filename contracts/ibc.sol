@@ -75,9 +75,9 @@ contract IBC is AccessControl {
     // IBC-Compatible Events
     /////////////////////////////////////////////////////////
 
-    event CreateClient(string client_id, CLIENT_TYPE client_type, uint number);
+    event CreateClient(string client_id, uint indexed client_type, uint number);
 
-    event UpdateClient(string client_id, CLIENT_TYPE client_type, uint number);
+    event UpdateClient(string client_id, uint indexed client_type, uint number);
 
     /////////////////////////////////////////////////////////
     // IBC-Compatible Interfaces
@@ -95,7 +95,7 @@ contract IBC is AccessControl {
         require(_id_client_types[client_id] == CLIENT_TYPE.Unknown, "IBC: generated client_id error");
         _id_client_types[client_id] = client_type;
 
-        emit CreateClient(client_id, client_type, block.number);
+        emit CreateClient(client_id, uint(client_type), block.number);
     }
 
     function client_update(MsgClientUpdate memory update)
@@ -106,7 +106,7 @@ contract IBC is AccessControl {
         address lightclient = get_light_client(update.client_id);
         IBCLightClient(lightclient).client_update(update);
 
-        emit UpdateClient(update.client_id, _id_client_types[update.client_id], block.number);
+        emit UpdateClient(update.client_id, uint(_id_client_types[update.client_id]), block.number);
     }
 
     function client_misbehaviour(MsgClientMisbehaviour memory misbehaviour)

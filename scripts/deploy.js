@@ -5,21 +5,24 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const IBC_RELAYER = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("IBC_RELAYER"));
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const [_, relayer] = await ethers.getSigners();
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  const IBC = await ethers.getContractFactory("IBC");
+  const IBC_PROXY = await upgrades.deployProxy(IBC, [], { initializer: "construct" });
+  await IBC_PROXY.deployed();
+  
+  const CKB = await ethers.getContractFactory("CkbLightclient");
+  const CKB_PROXY = await upgrades.deployProxy(CKB, [IBC_PROXY.address], { initializer: "construct" });
+  await CKB_PROXY.deployed();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
+  await IBC_PROXY.set_light_client(4, CKB_PROXY.address);
+  await IBC_PROXY.grantRole(IBC_RELAYER, relayer.address);
 
   console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    `IBC contract deployed at ${IBC_PROXY.address} with CKBLightclient setup, the relayer is ${relayer.address}`
   );
 }
 
