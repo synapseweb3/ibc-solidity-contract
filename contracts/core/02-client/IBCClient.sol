@@ -27,6 +27,7 @@ contract IBCClient is IBCStore, IIBCClient {
         address clientImpl = clientRegistry[msg_.clientType];
         require(clientImpl != address(0), "unregistered client type");
         clientId = generateClientIdentifier(msg_.clientType);
+        clientIds.push(clientId);
         clientTypes[clientId] = msg_.clientType;
         clientImpls[clientId] = clientImpl;
         (bytes32 clientStateCommitment, ConsensusStateUpdate memory update, bool ok) =
@@ -38,7 +39,8 @@ contract IBCClient is IBCStore, IIBCClient {
         commitments[IBCCommitment.consensusStateCommitmentKey(
             clientId, update.height.revision_number, update.height.revision_height
         )] = update.consensusStateCommitment;
-
+        consensusHeights[clientId].push(update.height);
+        clientIds.push(clientId);
         return clientId;
     }
 
@@ -57,6 +59,7 @@ contract IBCClient is IBCStore, IIBCClient {
             commitments[IBCCommitment.consensusStateCommitmentKey(
                 msg_.clientId, updates[i].height.revision_number, updates[i].height.revision_height
             )] = updates[i].consensusStateCommitment;
+            consensusHeights[msg_.clientId].push(updates[i].height);
         }
     }
 

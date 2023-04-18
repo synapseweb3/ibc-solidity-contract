@@ -19,7 +19,7 @@ library Channel {
 
   // Solidity enum encoder
   function encode_State(State x) internal pure returns (int32) {
-    
+
     if (x == State.STATE_UNINITIALIZED_UNSPECIFIED) {
       return 0;
     }
@@ -45,7 +45,7 @@ library Channel {
 
   // Solidity enum decoder
   function decode_State(int64 x) internal pure returns (State) {
-    
+
     if (x == 0) {
       return State.STATE_UNINITIALIZED_UNSPECIFIED;
     }
@@ -93,7 +93,7 @@ library Channel {
 
   // Solidity enum encoder
   function encode_Order(Order x) internal pure returns (int32) {
-    
+
     if (x == Order.ORDER_NONE_UNSPECIFIED) {
       return 0;
     }
@@ -111,7 +111,7 @@ library Channel {
 
   // Solidity enum decoder
   function decode_Order(int64 x) internal pure returns (Order) {
-    
+
     if (x == 0) {
       return Order.ORDER_NONE_UNSPECIFIED;
     }
@@ -407,7 +407,7 @@ library Channel {
     int32 _enum_ordering = encode_Order(r.ordering);
     pointer += ProtoBufRuntime._encode_enum(_enum_ordering, pointer, bs);
     }
-    
+
     pointer += ProtoBufRuntime._encode_key(
       3,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -415,7 +415,7 @@ library Channel {
       bs
     );
     pointer += ChannelCounterparty._encode_nested(r.counterparty, pointer, bs);
-    
+
     if (r.connection_hops.length != 0) {
     for(i = 0; i < r.connection_hops.length; i++) {
       pointer += ProtoBufRuntime._encode_key(
@@ -493,7 +493,7 @@ library Channel {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (uint(r.state) != 0) {
     return false;
   }
@@ -709,7 +709,7 @@ library ChannelCounterparty {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
+
     if (bytes(r.port_id).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
@@ -780,7 +780,7 @@ library ChannelCounterparty {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (bytes(r.port_id).length != 0) {
     return false;
   }
@@ -831,8 +831,7 @@ library ChannelCounterparty {
 }
 //library ChannelCounterparty
 
-library ChannelIdentifiedChannel {
-
+library IdentifiedChannel {
 
   //struct definition
   struct Data {
@@ -1142,7 +1141,7 @@ library ChannelIdentifiedChannel {
     int32 _enum_ordering = Channel.encode_Order(r.ordering);
     pointer += ProtoBufRuntime._encode_enum(_enum_ordering, pointer, bs);
     }
-    
+
     pointer += ProtoBufRuntime._encode_key(
       3,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -1150,7 +1149,7 @@ library ChannelIdentifiedChannel {
       bs
     );
     pointer += ChannelCounterparty._encode_nested(r.counterparty, pointer, bs);
-    
+
     if (r.connection_hops.length != 0) {
     for(i = 0; i < r.connection_hops.length; i++) {
       pointer += ProtoBufRuntime._encode_key(
@@ -1248,7 +1247,7 @@ library ChannelIdentifiedChannel {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (uint(r.state) != 0) {
     return false;
   }
@@ -1336,7 +1335,7 @@ library ChannelIdentifiedChannel {
     }
   }
 }
-//library ChannelIdentifiedChannel
+//library IdentifiedChannel
 
 library Packet {
 
@@ -1620,7 +1619,7 @@ library Packet {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
+
     if (r.sequence != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
@@ -1675,7 +1674,7 @@ library Packet {
     );
     pointer += ProtoBufRuntime._encode_bytes(r.data, pointer, bs);
     }
-    
+
     pointer += ProtoBufRuntime._encode_key(
       7,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -1683,7 +1682,7 @@ library Packet {
       bs
     );
     pointer += Height._encode_nested(r.timeout_height, pointer, bs);
-    
+
     if (r.timeout_timestamp != 0) {
     pointer += ProtoBufRuntime._encode_key(
       8,
@@ -1751,7 +1750,7 @@ library Packet {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (r.sequence != 0) {
     return false;
   }
@@ -2006,7 +2005,7 @@ library PacketState {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
+
     if (bytes(r.port_id).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
@@ -2097,7 +2096,7 @@ library PacketState {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (bytes(r.port_id).length != 0) {
     return false;
   }

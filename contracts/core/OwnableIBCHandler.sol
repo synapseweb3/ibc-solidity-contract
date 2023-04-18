@@ -31,6 +31,7 @@ contract OwnableIBCHandler is IBCHandler, Ownable {
      */
     function bindPort(string calldata portId, address moduleAddress) public override onlyOwner {
         super.bindPort(portId, moduleAddress);
+        portIds.push(portId);
     }
 
     /**

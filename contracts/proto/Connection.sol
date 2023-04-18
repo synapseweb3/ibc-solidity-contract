@@ -18,7 +18,7 @@ library ConnectionEnd {
 
   // Solidity enum encoder
   function encode_State(State x) internal pure returns (int32) {
-    
+
     if (x == State.STATE_UNINITIALIZED_UNSPECIFIED) {
       return 0;
     }
@@ -40,7 +40,7 @@ library ConnectionEnd {
 
   // Solidity enum decoder
   function decode_State(int64 x) internal pure returns (State) {
-    
+
     if (x == 0) {
       return State.STATE_UNINITIALIZED_UNSPECIFIED;
     }
@@ -368,7 +368,7 @@ library ConnectionEnd {
     int32 _enum_state = encode_State(r.state);
     pointer += ProtoBufRuntime._encode_enum(_enum_state, pointer, bs);
     }
-    
+
     pointer += ProtoBufRuntime._encode_key(
       4,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -376,7 +376,7 @@ library ConnectionEnd {
       bs
     );
     pointer += Counterparty._encode_nested(r.counterparty, pointer, bs);
-    
+
     if (r.delay_period != 0) {
     pointer += ProtoBufRuntime._encode_key(
       5,
@@ -443,7 +443,7 @@ library ConnectionEnd {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (bytes(r.client_id).length != 0) {
     return false;
   }
@@ -476,7 +476,7 @@ library ConnectionEnd {
     for(uint256 i2 = 0; i2 < input.versions.length; i2++) {
       output.versions.push(input.versions[i2]);
     }
-    
+
     output.state = input.state;
     Counterparty.store(input.counterparty, output.counterparty);
     output.delay_period = input.delay_period;
@@ -704,7 +704,7 @@ library Counterparty {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
+
     if (bytes(r.client_id).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
@@ -723,7 +723,7 @@ library Counterparty {
     );
     pointer += ProtoBufRuntime._encode_string(r.connection_id, pointer, bs);
     }
-    
+
     pointer += ProtoBufRuntime._encode_key(
       3,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -731,7 +731,7 @@ library Counterparty {
       bs
     );
     pointer += MerklePrefix._encode_nested(r.prefix, pointer, bs);
-    
+
     return pointer - offset;
   }
   // nested encoder
@@ -785,7 +785,7 @@ library Counterparty {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (bytes(r.client_id).length != 0) {
     return false;
   }
@@ -1075,7 +1075,7 @@ library Version {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (bytes(r.identifier).length != 0) {
     return false;
   }
@@ -1143,3 +1143,13 @@ library Version {
   }
 }
 //library Version
+
+
+library IdentifiedConnectionEnd {
+  struct Data {
+    string connection_id;
+    ConnectionEnd.Data connection_end;
+  }
+}
+
+//library IdentifiedConnectionEnd

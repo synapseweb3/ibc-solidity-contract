@@ -35,6 +35,8 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         connection.delay_period = msg_.delayPeriod;
         connection.counterparty = msg_.counterparty;
         updateConnectionCommitment(connectionId);
+        connectionIds.push(connectionId);
+        clientConnectionIds[msg_.clientId].push(connectionId);
         return connectionId;
     }
 
@@ -86,6 +88,8 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         // TODO we should also verify a consensus state
 
         updateConnectionCommitment(connectionId);
+        connectionIds.push(connectionId);
+        clientConnectionIds[msg_.clientId].push(connectionId);
         return connectionId;
     }
 

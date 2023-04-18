@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
+import "../../proto/Client.sol";
 import "../../proto/Connection.sol";
 import "../../proto/Channel.sol";
 import "../02-client/ILightClient.sol";
@@ -11,6 +12,14 @@ abstract contract IBCStore {
     mapping(bytes32 => bytes32) public commitments;
 
     // Store
+    string[] public clientIds;
+    string[] public connectionIds;
+    mapping(string => string[]) public clientConnectionIds; // clientId => connectionId[]
+    string[] public portIds;
+    string[] public channelIds;
+    mapping(string => string[]) public portChannelIds; // portId => channelId[]
+    mapping(string => string[]) public connectionChannelIds; // connectionId => channelId[]
+
     mapping(string => address) public clientRegistry; // clientType => clientImpl
     mapping(string => string) public clientTypes; // clientID => clientType
     mapping(string => address) public clientImpls; // clientID => clientImpl
@@ -22,6 +31,7 @@ abstract contract IBCStore {
     mapping(string => mapping(string => mapping(uint64 => uint8))) public packetReceipts;
     mapping(bytes => address[]) public capabilities;
 
+    mapping(string => Height.Data[]) public consensusHeights; // clientId => heights
     // Host parameters
     uint64 public expectedTimePerBlock;
 

@@ -38,6 +38,10 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         nextSequenceRecvs[msg_.portId][channelId] = 1;
         nextSequenceAcks[msg_.portId][channelId] = 1;
         updateChannelCommitment(msg_.portId, channelId);
+
+        channelIds.push(channelId);
+        portChannelIds[msg_.portId].push(channelId);
+        connectionChannelIds[msg_.channel.connection_hops[0]].push(channelId);
         return channelId;
     }
 
@@ -84,6 +88,10 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         nextSequenceRecvs[msg_.portId][channelId] = 1;
         nextSequenceAcks[msg_.portId][channelId] = 1;
         updateChannelCommitment(msg_.portId, channelId);
+
+        channelIds.push(channelId);
+        portChannelIds[msg_.portId].push(channelId);
+        connectionChannelIds[msg_.channel.connection_hops[0]].push(channelId);
         return channelId;
     }
 
