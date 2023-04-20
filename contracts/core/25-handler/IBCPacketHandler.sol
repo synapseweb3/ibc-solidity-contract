@@ -17,7 +17,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
 
     // Events
     event SendPacket(Packet.Data packet);
-    event RecvPacket(Packet.Data packet);
+    event ReceivePacket(Packet.Data packet);
     event WriteAcknowledgement(
         string destinationPortId, string destinationChannel, uint64 sequence, bytes acknowledgement
     );
@@ -56,7 +56,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
                 msg_.packet.destination_port, msg_.packet.destination_channel, msg_.packet.sequence, acknowledgement
             );
         }
-        emit RecvPacket(msg_.packet);
+        emit ReceivePacket(msg_.packet);
     }
 
     function writeAcknowledgement(

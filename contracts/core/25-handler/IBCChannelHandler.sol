@@ -14,7 +14,12 @@ abstract contract IBCChannelHandler is ModuleManager {
     // IBC Channel contract address
     address immutable ibcChannelAddress;
 
-    event GeneratedChannelIdentifier(string);
+    event OpenInitChannel(string portId, string channelId, string connectionId, string counterpartyPortId, string counterpartyChannelId);
+    event OpenTryChannel(string portId, string channelId, string connectionId, string counterpartyPortId, string counterpartyChannelId);
+    event OpenAckChannel(string portId, string channelId, string counterpartyChannelId);
+    event OpenConfirmChannel(string portId, string channelId);
+    event CloseInitChannel(string portId, string channelId);
+    event CloseConfirmChannel(string portId, string channelId);
 
     constructor(address ibcChannel) {
         ibcChannelAddress = ibcChannel;
@@ -36,7 +41,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             msg_.channel.version
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
-        emit GeneratedChannelIdentifier(channelId);
+        emit OpenInitChannel(msg_.portId, channelId, msg_.channel.connection_hops[0], msg_.channel.counterparty.port_id, msg_.channel.counterparty.channel_id);
         return channelId;
     }
 
@@ -60,7 +65,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             msg_.counterpartyVersion
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
-        emit GeneratedChannelIdentifier(channelId);
+        emit OpenTryChannel(msg_.portId, channelId, msg_.channel.connection_hops[0], msg_.channel.counterparty.port_id, msg_.channel.counterparty.channel_id);
         return channelId;
     }
 
@@ -69,6 +74,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             ibcChannelAddress.delegatecall(abi.encodeWithSelector(IIBCChannelHandshake.channelOpenAck.selector, msg_));
         require(success);
         lookupModuleByPort(msg_.portId).onChanOpenAck(msg_.portId, msg_.channelId, msg_.counterpartyVersion);
+        emit OpenAckChannel(msg_.portId, msg_.channelId, msg_.counterpartyChannelId);
     }
 
     function channelOpenConfirm(IBCMsgs.MsgChannelOpenConfirm calldata msg_) external {
@@ -77,6 +83,7 @@ abstract contract IBCChannelHandler is ModuleManager {
         );
         require(success);
         lookupModuleByPort(msg_.portId).onChanOpenConfirm(msg_.portId, msg_.channelId);
+        emit OpenConfirmChannel(msg_.portId, msg_.channelId);
     }
 
     function channelCloseInit(IBCMsgs.MsgChannelCloseInit calldata msg_) external {
@@ -84,6 +91,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             ibcChannelAddress.delegatecall(abi.encodeWithSelector(IIBCChannelHandshake.channelCloseInit.selector, msg_));
         require(success);
         lookupModuleByPort(msg_.portId).onChanCloseInit(msg_.portId, msg_.channelId);
+        emit CloseInitChannel(msg_.portId, msg_.channelId);
     }
 
     function channelCloseConfirm(IBCMsgs.MsgChannelCloseConfirm calldata msg_) external {
@@ -92,5 +100,6 @@ abstract contract IBCChannelHandler is ModuleManager {
         );
         require(success);
         lookupModuleByPort(msg_.portId).onChanCloseConfirm(msg_.portId, msg_.channelId);
+        emit CloseConfirmChannel(msg_.portId, msg_.channelId);
     }
 }

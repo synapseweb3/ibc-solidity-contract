@@ -12,7 +12,10 @@ abstract contract IBCConnectionHandler {
     // IBC Connection contract address
     address immutable ibcConnectionAddress;
 
-    event GeneratedConnectionIdentifier(string);
+    event OpenInitConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterPartyConnectionClientId);
+    event OpenTryConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterPartyConnectionClientId);
+    event OpenAckConnection(string connectionId, string counterpartyConnectionId);
+    event OpenConfirmConnection(string connectionId);
 
     constructor(address ibcConnection) {
         ibcConnectionAddress = ibcConnection;
@@ -27,7 +30,7 @@ abstract contract IBCConnectionHandler {
         );
         require(success);
         connectionId = abi.decode(res, (string));
-        emit GeneratedConnectionIdentifier(connectionId);
+        emit OpenInitConnection(connectionId, msg_.clientId, msg_.counterparty.connection_id, msg_.counterparty.client_id);
         return connectionId;
     }
 
@@ -40,7 +43,7 @@ abstract contract IBCConnectionHandler {
         );
         require(success);
         connectionId = abi.decode(res, (string));
-        emit GeneratedConnectionIdentifier(connectionId);
+        emit OpenTryConnection(connectionId, msg_.clientId, msg_.counterparty.connection_id, msg_.counterparty.client_id);
         return connectionId;
     }
 
@@ -49,6 +52,7 @@ abstract contract IBCConnectionHandler {
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenAck.selector, msg_)
         );
         require(success);
+        emit OpenAckConnection(msg_.connectionId, msg_.counterpartyConnectionID);
     }
 
     function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external {
@@ -56,5 +60,6 @@ abstract contract IBCConnectionHandler {
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenConfirm.selector, msg_)
         );
         require(success);
+        emit OpenConfirmConnection(msg_.connectionId);
     }
 }

@@ -11,7 +11,8 @@ abstract contract IBCClientHandler {
     // IBC Client contract address
     address immutable ibcClientAddress;
 
-    event GeneratedClientIdentifier(string);
+    event CreateClient(string clientId, string clientType);
+    event UpdateClient(string clientId, bytes clientMessage);
 
     constructor(address ibcClient) {
         ibcClientAddress = ibcClient;
@@ -35,7 +36,7 @@ abstract contract IBCClientHandler {
             ibcClientAddress.delegatecall(abi.encodeWithSelector(IIBCClient.createClient.selector, msg_));
         require(success);
         clientId = abi.decode(res, (string));
-        emit GeneratedClientIdentifier(clientId);
+        emit CreateClient(clientId, msg_.clientType);
         return clientId;
     }
 
@@ -45,5 +46,6 @@ abstract contract IBCClientHandler {
     function updateClient(IBCMsgs.MsgUpdateClient calldata msg_) external {
         (bool success,) = ibcClientAddress.delegatecall(abi.encodeWithSelector(IIBCClient.updateClient.selector, msg_));
         require(success);
+        emit UpdateClient(msg_.clientId, msg_.clientMessage);
     }
 }
