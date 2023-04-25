@@ -34,14 +34,14 @@ abstract contract IBCChannelHandler is ModuleManager {
         IIBCModule module = lookupModuleByPort(msg_.portId);
         module.onChanOpenInit(
             msg_.channel.ordering,
-            msg_.channel.connection_hops,
+            msg_.channel.connectionHops,
             msg_.portId,
             channelId,
             msg_.channel.counterparty,
             msg_.channel.version
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
-        emit OpenInitChannel(msg_.portId, channelId, msg_.channel.connection_hops[0], msg_.channel.counterparty.port_id, msg_.channel.counterparty.channel_id);
+        emit OpenInitChannel(msg_.portId, channelId, msg_.channel.connectionHops[0], msg_.channel.counterparty.portId, msg_.channel.counterparty.channelId);
         return channelId;
     }
 
@@ -57,7 +57,7 @@ abstract contract IBCChannelHandler is ModuleManager {
         IIBCModule module = lookupModuleByPort(msg_.portId);
         module.onChanOpenTry(
             msg_.channel.ordering,
-            msg_.channel.connection_hops,
+            msg_.channel.connectionHops,
             msg_.portId,
             channelId,
             msg_.channel.counterparty,
@@ -65,7 +65,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             msg_.counterpartyVersion
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
-        emit OpenTryChannel(msg_.portId, channelId, msg_.channel.connection_hops[0], msg_.channel.counterparty.port_id, msg_.channel.counterparty.channel_id);
+        emit OpenTryChannel(msg_.portId, channelId, msg_.channel.connectionHops[0], msg_.channel.counterparty.portId, msg_.channel.counterparty.channelId);
         return channelId;
     }
 

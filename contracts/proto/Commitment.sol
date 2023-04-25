@@ -8,7 +8,7 @@ library MerklePrefix {
 
   //struct definition
   struct Data {
-    bytes key_prefix;
+    bytes keyPrefix;
   }
 
   // Decoder section
@@ -82,7 +82,7 @@ library MerklePrefix {
     Data memory r
   ) internal pure returns (uint) {
     (bytes memory x, uint256 sz) = ProtoBufRuntime._decode_bytes(p, bs);
-    r.key_prefix = x;
+    r.keyPrefix = x;
     return sz;
   }
 
@@ -118,15 +118,15 @@ library MerklePrefix {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
-    if (r.key_prefix.length != 0) {
+
+    if (r.keyPrefix.length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_bytes(r.key_prefix, pointer, bs);
+    pointer += ProtoBufRuntime._encode_bytes(r.keyPrefix, pointer, bs);
     }
     return pointer - offset;
   }
@@ -171,7 +171,7 @@ library MerklePrefix {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(r.key_prefix.length);
+    e += 1 + ProtoBufRuntime._sz_lendelim(r.keyPrefix.length);
     return e;
   }
   // empty checker
@@ -179,8 +179,8 @@ library MerklePrefix {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
-  if (r.key_prefix.length != 0) {
+
+  if (r.keyPrefix.length != 0) {
     return false;
   }
 
@@ -195,7 +195,7 @@ library MerklePrefix {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.key_prefix = input.key_prefix;
+    output.keyPrefix = input.keyPrefix;
 
   }
 

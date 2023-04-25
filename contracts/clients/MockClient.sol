@@ -55,18 +55,18 @@ contract MockClient is ILightClient {
             return (clientStateCommitment, update, false);
         }
         if (
-            clientState.latest_height.revision_number != 0 || clientState.latest_height.revision_height == 0
+            clientState.latestHeight.revisionNumber != 0 || clientState.latestHeight.revisionHeight == 0
                 || consensusState.timestamp == 0
         ) {
             return (clientStateCommitment, update, false);
         }
         clientStates[clientId] = clientState;
-        consensusStates[clientId][clientState.latest_height.toUint128()] = consensusState;
+        consensusStates[clientId][clientState.latestHeight.toUint128()] = consensusState;
         return (
             keccak256(clientStateBytes),
             ConsensusStateUpdate({
                 consensusStateCommitment: keccak256(consensusStateBytes),
-                height: clientState.latest_height
+                height: clientState.latestHeight
             }),
             true
         );
@@ -90,7 +90,7 @@ contract MockClient is ILightClient {
      */
     function getLatestHeight(string calldata clientId) external view override returns (Height.Data memory, bool) {
         ClientState.Data storage clientState = clientStates[clientId];
-        return (clientState.latest_height, clientState.latest_height.revision_height != 0);
+        return (clientState.latestHeight, clientState.latestHeight.revisionHeight != 0);
     }
 
     /**
@@ -113,16 +113,16 @@ contract MockClient is ILightClient {
         Any.Data memory anyConsensusState;
 
         (height, timestamp) = parseHeader(clientMessageBytes);
-        if (height.gt(clientStates[clientId].latest_height)) {
-            clientStates[clientId].latest_height = height;
+        if (height.gt(clientStates[clientId].latestHeight)) {
+            clientStates[clientId].latestHeight = height;
         }
-        anyClientState.type_url = CLIENT_STATE_TYPE_URL;
+        anyClientState.typeUrl = CLIENT_STATE_TYPE_URL;
         anyClientState.value = ClientState.encode(clientStates[clientId]);
 
         ConsensusState.Data storage consensusState = consensusStates[clientId][height.toUint128()];
         consensusState.timestamp = timestamp;
 
-        anyConsensusState.type_url = CONSENSUS_STATE_TYPE_URL;
+        anyConsensusState.typeUrl = CONSENSUS_STATE_TYPE_URL;
         anyConsensusState.value = ConsensusState.encode(consensusState);
 
         updates = new ConsensusStateUpdate[](1);
@@ -174,10 +174,10 @@ contract MockClient is ILightClient {
      */
     function getClientState(string calldata clientId) external view returns (bytes memory clientStateBytes, bool) {
         ClientState.Data storage clientState = clientStates[clientId];
-        if (clientState.latest_height.revision_height == 0) {
+        if (clientState.latestHeight.revisionHeight == 0) {
             return (clientStateBytes, false);
         }
-        return (Any.encode(Any.Data({type_url: CLIENT_STATE_TYPE_URL, value: ClientState.encode(clientState)})), true);
+        return (Any.encode(Any.Data({typeUrl: CLIENT_STATE_TYPE_URL, value: ClientState.encode(clientState)})), true);
     }
 
     /**
@@ -194,7 +194,7 @@ contract MockClient is ILightClient {
             return (consensusStateBytes, false);
         }
         return (
-            Any.encode(Any.Data({type_url: CONSENSUS_STATE_TYPE_URL, value: ConsensusState.encode(consensusState)})),
+            Any.encode(Any.Data({typeUrl: CONSENSUS_STATE_TYPE_URL, value: ConsensusState.encode(consensusState)})),
             true
         );
     }
@@ -203,10 +203,10 @@ contract MockClient is ILightClient {
 
     function parseHeader(bytes memory bz) internal pure returns (Height.Data memory, uint64) {
         Any.Data memory any = Any.decode(bz);
-        require(keccak256(abi.encodePacked(any.type_url)) == HEADER_TYPE_URL_HASH, "invalid header type");
+        require(keccak256(abi.encodePacked(any.typeUrl)) == HEADER_TYPE_URL_HASH, "invalid header type");
         Header.Data memory header = Header.decode(any.value);
         require(
-            header.height.revision_number == 0 && header.height.revision_height != 0 && header.timestamp != 0,
+            header.height.revisionNumber == 0 && header.height.revisionHeight != 0 && header.timestamp != 0,
             "invalid header"
         );
         return (header.height, header.timestamp);
@@ -218,7 +218,7 @@ contract MockClient is ILightClient {
         returns (ClientState.Data memory clientState, bool ok)
     {
         Any.Data memory anyClientState = Any.decode(bz);
-        if (keccak256(abi.encodePacked(anyClientState.type_url)) != CLIENT_STATE_TYPE_URL_HASH) {
+        if (keccak256(abi.encodePacked(anyClientState.typeUrl)) != CLIENT_STATE_TYPE_URL_HASH) {
             return (clientState, false);
         }
         return (ClientState.decode(anyClientState.value), true);
@@ -230,7 +230,7 @@ contract MockClient is ILightClient {
         returns (ConsensusState.Data memory consensusState, bool ok)
     {
         Any.Data memory anyConsensusState = Any.decode(bz);
-        if (keccak256(abi.encodePacked(anyConsensusState.type_url)) != CONSENSUS_STATE_TYPE_URL_HASH) {
+        if (keccak256(abi.encodePacked(anyConsensusState.typeUrl)) != CONSENSUS_STATE_TYPE_URL_HASH) {
             return (consensusState, false);
         }
         return (ConsensusState.decode(anyConsensusState.value), true);

@@ -9,7 +9,7 @@ library IbcLightclientsMockV1ClientState {
 
   //struct definition
   struct Data {
-    Height.Data latest_height;
+    Height.Data latestHeight;
   }
 
   // Decoder section
@@ -83,7 +83,7 @@ library IbcLightclientsMockV1ClientState {
     Data memory r
   ) internal pure returns (uint) {
     (Height.Data memory x, uint256 sz) = _decode_Height(p, bs);
-    r.latest_height = x;
+    r.latestHeight = x;
     return sz;
   }
 
@@ -139,16 +139,15 @@ library IbcLightclientsMockV1ClientState {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
-    
+
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += Height._encode_nested(r.latest_height, pointer, bs);
-    
+    pointer += Height._encode_nested(r.latestHeight, pointer, bs);
+
     return pointer - offset;
   }
   // nested encoder
@@ -192,7 +191,7 @@ library IbcLightclientsMockV1ClientState {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(Height._estimate(r.latest_height));
+    e += 1 + ProtoBufRuntime._sz_lendelim(Height._estimate(r.latestHeight));
     return e;
   }
   // empty checker
@@ -200,7 +199,7 @@ library IbcLightclientsMockV1ClientState {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
     return true;
   }
 
@@ -212,7 +211,7 @@ library IbcLightclientsMockV1ClientState {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    Height.store(input.latest_height, output.latest_height);
+    Height.store(input.latestHeight, output.latestHeight);
 
   }
 
@@ -357,7 +356,7 @@ library IbcLightclientsMockV1ConsensusState {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
+
     if (r.timestamp != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
@@ -418,7 +417,7 @@ library IbcLightclientsMockV1ConsensusState {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (r.timestamp != 0) {
     return false;
   }
@@ -620,8 +619,8 @@ library IbcLightclientsMockV1Header {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
-    
+
+
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -629,7 +628,7 @@ library IbcLightclientsMockV1Header {
       bs
     );
     pointer += Height._encode_nested(r.height, pointer, bs);
-    
+
     if (r.timestamp != 0) {
     pointer += ProtoBufRuntime._encode_key(
       2,
@@ -691,7 +690,7 @@ library IbcLightclientsMockV1Header {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
+
   if (r.timestamp != 0) {
     return false;
   }

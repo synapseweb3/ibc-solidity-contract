@@ -9,29 +9,29 @@ library ConnectionEnd {
   //enum definition
   // Solidity enum definitions
   enum State {
-    STATE_UNINITIALIZED_UNSPECIFIED,
-    STATE_INIT,
-    STATE_TRYOPEN,
-    STATE_OPEN
+    UninitializedUnspecified,
+    Init,
+    TryOpen,
+    Open
   }
 
 
   // Solidity enum encoder
   function encode_State(State x) internal pure returns (int32) {
 
-    if (x == State.STATE_UNINITIALIZED_UNSPECIFIED) {
+    if (x == State.UninitializedUnspecified) {
       return 0;
     }
 
-    if (x == State.STATE_INIT) {
+    if (x == State.Init) {
       return 1;
     }
 
-    if (x == State.STATE_TRYOPEN) {
+    if (x == State.TryOpen) {
       return 2;
     }
 
-    if (x == State.STATE_OPEN) {
+    if (x == State.Open) {
       return 3;
     }
     revert();
@@ -42,19 +42,19 @@ library ConnectionEnd {
   function decode_State(int64 x) internal pure returns (State) {
 
     if (x == 0) {
-      return State.STATE_UNINITIALIZED_UNSPECIFIED;
+      return State.UninitializedUnspecified;
     }
 
     if (x == 1) {
-      return State.STATE_INIT;
+      return State.Init;
     }
 
     if (x == 2) {
-      return State.STATE_TRYOPEN;
+      return State.TryOpen;
     }
 
     if (x == 3) {
-      return State.STATE_OPEN;
+      return State.Open;
     }
     revert();
   }
@@ -76,11 +76,11 @@ library ConnectionEnd {
 
   //struct definition
   struct Data {
-    string client_id;
+    string clientId;
     Version.Data[] versions;
     ConnectionEnd.State state;
     Counterparty.Data counterparty;
-    uint64 delay_period;
+    uint64 delayPeriod;
   }
 
   // Decoder section
@@ -183,7 +183,7 @@ library ConnectionEnd {
     Data memory r
   ) internal pure returns (uint) {
     (string memory x, uint256 sz) = ProtoBufRuntime._decode_string(p, bs);
-    r.client_id = x;
+    r.clientId = x;
     return sz;
   }
 
@@ -262,7 +262,7 @@ library ConnectionEnd {
     Data memory r
   ) internal pure returns (uint) {
     (uint64 x, uint256 sz) = ProtoBufRuntime._decode_uint64(p, bs);
-    r.delay_period = x;
+    r.delayPeriod = x;
     return sz;
   }
 
@@ -338,14 +338,14 @@ library ConnectionEnd {
     uint256 offset = p;
     uint256 pointer = p;
     uint256 i;
-    if (bytes(r.client_id).length != 0) {
+    if (bytes(r.clientId).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_string(r.client_id, pointer, bs);
+    pointer += ProtoBufRuntime._encode_string(r.clientId, pointer, bs);
     }
     if (r.versions.length != 0) {
     for(i = 0; i < r.versions.length; i++) {
@@ -377,14 +377,14 @@ library ConnectionEnd {
     );
     pointer += Counterparty._encode_nested(r.counterparty, pointer, bs);
 
-    if (r.delay_period != 0) {
+    if (r.delayPeriod != 0) {
     pointer += ProtoBufRuntime._encode_key(
       5,
       ProtoBufRuntime.WireType.Varint,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_uint64(r.delay_period, pointer, bs);
+    pointer += ProtoBufRuntime._encode_uint64(r.delayPeriod, pointer, bs);
     }
     return pointer - offset;
   }
@@ -429,13 +429,13 @@ library ConnectionEnd {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;uint256 i;
-    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.client_id).length);
+    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.clientId).length);
     for(i = 0; i < r.versions.length; i++) {
       e += 1 + ProtoBufRuntime._sz_lendelim(Version._estimate(r.versions[i]));
     }
     e += 1 + ProtoBufRuntime._sz_enum(encode_State(r.state));
     e += 1 + ProtoBufRuntime._sz_lendelim(Counterparty._estimate(r.counterparty));
-    e += 1 + ProtoBufRuntime._sz_uint64(r.delay_period);
+    e += 1 + ProtoBufRuntime._sz_uint64(r.delayPeriod);
     return e;
   }
   // empty checker
@@ -444,7 +444,7 @@ library ConnectionEnd {
     Data memory r
   ) internal pure returns (bool) {
 
-  if (bytes(r.client_id).length != 0) {
+  if (bytes(r.clientId).length != 0) {
     return false;
   }
 
@@ -456,7 +456,7 @@ library ConnectionEnd {
     return false;
   }
 
-  if (r.delay_period != 0) {
+  if (r.delayPeriod != 0) {
     return false;
   }
 
@@ -471,7 +471,7 @@ library ConnectionEnd {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.client_id = input.client_id;
+    output.clientId = input.clientId;
 
     for(uint256 i2 = 0; i2 < input.versions.length; i2++) {
       output.versions.push(input.versions[i2]);
@@ -479,7 +479,7 @@ library ConnectionEnd {
 
     output.state = input.state;
     Counterparty.store(input.counterparty, output.counterparty);
-    output.delay_period = input.delay_period;
+    output.delayPeriod = input.delayPeriod;
 
   }
 
@@ -532,8 +532,8 @@ library Counterparty {
 
   //struct definition
   struct Data {
-    string client_id;
-    string connection_id;
+    string clientId;
+    string connectionId;
     MerklePrefix.Data prefix;
   }
 
@@ -614,7 +614,7 @@ library Counterparty {
     Data memory r
   ) internal pure returns (uint) {
     (string memory x, uint256 sz) = ProtoBufRuntime._decode_string(p, bs);
-    r.client_id = x;
+    r.clientId = x;
     return sz;
   }
 
@@ -631,7 +631,7 @@ library Counterparty {
     Data memory r
   ) internal pure returns (uint) {
     (string memory x, uint256 sz) = ProtoBufRuntime._decode_string(p, bs);
-    r.connection_id = x;
+    r.connectionId = x;
     return sz;
   }
 
@@ -705,23 +705,23 @@ library Counterparty {
     uint256 offset = p;
     uint256 pointer = p;
 
-    if (bytes(r.client_id).length != 0) {
+    if (bytes(r.clientId).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_string(r.client_id, pointer, bs);
+    pointer += ProtoBufRuntime._encode_string(r.clientId, pointer, bs);
     }
-    if (bytes(r.connection_id).length != 0) {
+    if (bytes(r.connectionId).length != 0) {
     pointer += ProtoBufRuntime._encode_key(
       2,
       ProtoBufRuntime.WireType.LengthDelim,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_string(r.connection_id, pointer, bs);
+    pointer += ProtoBufRuntime._encode_string(r.connectionId, pointer, bs);
     }
 
     pointer += ProtoBufRuntime._encode_key(
@@ -775,8 +775,8 @@ library Counterparty {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.client_id).length);
-    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.connection_id).length);
+    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.clientId).length);
+    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.connectionId).length);
     e += 1 + ProtoBufRuntime._sz_lendelim(MerklePrefix._estimate(r.prefix));
     return e;
   }
@@ -786,11 +786,11 @@ library Counterparty {
     Data memory r
   ) internal pure returns (bool) {
 
-  if (bytes(r.client_id).length != 0) {
+  if (bytes(r.clientId).length != 0) {
     return false;
   }
 
-  if (bytes(r.connection_id).length != 0) {
+  if (bytes(r.connectionId).length != 0) {
     return false;
   }
 
@@ -805,8 +805,8 @@ library Counterparty {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.client_id = input.client_id;
-    output.connection_id = input.connection_id;
+    output.clientId = input.clientId;
+    output.connectionId = input.connectionId;
     MerklePrefix.store(input.prefix, output.prefix);
 
   }
@@ -1147,8 +1147,8 @@ library Version {
 
 library IdentifiedConnectionEnd {
   struct Data {
-    string connection_id;
-    ConnectionEnd.Data connection_end;
+    string connectionId;
+    ConnectionEnd.Data connectionEnd;
   }
 }
 

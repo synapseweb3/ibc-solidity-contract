@@ -21,12 +21,12 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
      * @dev channelOpenInit is called by a module to initiate a channel opening handshake with a module on another chain.
      */
     function channelOpenInit(IBCMsgs.MsgChannelOpenInit calldata msg_) external returns (string memory) {
-        require(msg_.channel.connection_hops.length == 1, "connection_hops length must be 1");
-        ConnectionEnd.Data storage connection = connections[msg_.channel.connection_hops[0]];
+        require(msg_.channel.connectionHops.length == 1, "connectionHops length must be 1");
+        ConnectionEnd.Data storage connection = connections[msg_.channel.connectionHops[0]];
         require(
             connection.versions.length == 1, "single version must be negotiated on connection before opening channel"
         );
-        require(msg_.channel.state == Channel.State.STATE_INIT, "channel state must STATE_INIT");
+        require(msg_.channel.state == Channel.State.Init, "channel state must Init");
 
         // TODO verifySupportedFeature
 
@@ -41,7 +41,7 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
 
         channelIds.push(channelId);
         portChannelIds[msg_.portId].push(channelId);
-        connectionChannelIds[msg_.channel.connection_hops[0]].push(channelId);
+        connectionChannelIds[msg_.channel.connectionHops[0]].push(channelId);
         return channelId;
     }
 
@@ -49,25 +49,25 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
      * @dev channelOpenTry is called by a module to accept the first step of a channel opening handshake initiated by a module on another chain.
      */
     function channelOpenTry(IBCMsgs.MsgChannelOpenTry calldata msg_) external returns (string memory) {
-        require(msg_.channel.connection_hops.length == 1, "connection_hops length must be 1");
-        ConnectionEnd.Data storage connection = connections[msg_.channel.connection_hops[0]];
+        require(msg_.channel.connectionHops.length == 1, "connectionHops length must be 1");
+        ConnectionEnd.Data storage connection = connections[msg_.channel.connectionHops[0]];
         require(
             connection.versions.length == 1, "single version must be negotiated on connection before opening channel"
         );
-        require(msg_.channel.state == Channel.State.STATE_TRYOPEN, "channel state must be STATE_TRYOPEN");
-        require(msg_.channel.connection_hops.length == 1);
+        require(msg_.channel.state == Channel.State.TryOpen, "channel state must be TryOpen");
+        require(msg_.channel.connectionHops.length == 1);
 
         // TODO verifySupportedFeature
 
         // TODO authenticates a port binding
 
         ChannelCounterparty.Data memory expectedCounterparty =
-            ChannelCounterparty.Data({port_id: msg_.portId, channel_id: ""});
+            ChannelCounterparty.Data({portId: msg_.portId, channelId: ""});
         Channel.Data memory expectedChannel = Channel.Data({
-            state: Channel.State.STATE_INIT,
+            state: Channel.State.Init,
             ordering: msg_.channel.ordering,
             counterparty: expectedCounterparty,
-            connection_hops: getCounterpartyHops(msg_.channel.connection_hops[0]),
+            connectionHops: getCounterpartyHops(msg_.channel.connectionHops[0]),
             version: msg_.counterpartyVersion
         });
         require(
@@ -75,8 +75,8 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
                 connection,
                 msg_.proofHeight,
                 msg_.proofInit,
-                msg_.channel.counterparty.port_id,
-                msg_.channel.counterparty.channel_id,
+                msg_.channel.counterparty.portId,
+                msg_.channel.counterparty.channelId,
                 Channel.encode(expectedChannel)
             ),
             "failed to verify channel state"
@@ -91,7 +91,7 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
 
         channelIds.push(channelId);
         portChannelIds[msg_.portId].push(channelId);
-        connectionChannelIds[msg_.channel.connection_hops[0]].push(channelId);
+        connectionChannelIds[msg_.channel.connectionHops[0]].push(channelId);
         return channelId;
     }
 
@@ -101,23 +101,23 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
     function channelOpenAck(IBCMsgs.MsgChannelOpenAck calldata msg_) external {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
         require(
-            channel.state == Channel.State.STATE_INIT || channel.state == Channel.State.STATE_TRYOPEN,
+            channel.state == Channel.State.Init || channel.state == Channel.State.TryOpen,
             "invalid channel state"
         );
 
         // TODO authenticates a port binding
 
-        ConnectionEnd.Data storage connection = connections[channel.connection_hops[0]];
-        require(connection.state == ConnectionEnd.State.STATE_OPEN, "connection state is not OPEN");
-        require(channel.connection_hops.length == 1);
+        ConnectionEnd.Data storage connection = connections[channel.connectionHops[0]];
+        require(connection.state == ConnectionEnd.State.Open, "connection state is not OPEN");
+        require(channel.connectionHops.length == 1);
 
         ChannelCounterparty.Data memory expectedCounterparty =
-            ChannelCounterparty.Data({port_id: msg_.portId, channel_id: msg_.channelId});
+            ChannelCounterparty.Data({portId: msg_.portId, channelId: msg_.channelId});
         Channel.Data memory expectedChannel = Channel.Data({
-            state: Channel.State.STATE_TRYOPEN,
+            state: Channel.State.TryOpen,
             ordering: channel.ordering,
             counterparty: expectedCounterparty,
-            connection_hops: getCounterpartyHops(channel.connection_hops[0]),
+            connectionHops: getCounterpartyHops(channel.connectionHops[0]),
             version: msg_.counterpartyVersion
         });
         require(
@@ -125,15 +125,15 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
                 connection,
                 msg_.proofHeight,
                 msg_.proofTry,
-                channel.counterparty.port_id,
+                channel.counterparty.portId,
                 msg_.counterpartyChannelId,
                 Channel.encode(expectedChannel)
             ),
             "failed to verify channel state"
         );
-        channel.state = Channel.State.STATE_OPEN;
+        channel.state = Channel.State.Open;
         channel.version = msg_.counterpartyVersion;
-        channel.counterparty.channel_id = msg_.counterpartyChannelId;
+        channel.counterparty.channelId = msg_.counterpartyChannelId;
         updateChannelCommitment(msg_.portId, msg_.channelId);
     }
 
@@ -142,21 +142,21 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
      */
     function channelOpenConfirm(IBCMsgs.MsgChannelOpenConfirm calldata msg_) external {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
-        require(channel.state == Channel.State.STATE_TRYOPEN, "channel state is not TRYOPEN");
+        require(channel.state == Channel.State.TryOpen, "channel state is not TRYOPEN");
 
         // TODO authenticates a port binding
 
-        ConnectionEnd.Data storage connection = connections[channel.connection_hops[0]];
-        require(connection.state == ConnectionEnd.State.STATE_OPEN, "connection state is not OPEN");
-        require(channel.connection_hops.length == 1);
+        ConnectionEnd.Data storage connection = connections[channel.connectionHops[0]];
+        require(connection.state == ConnectionEnd.State.Open, "connection state is not OPEN");
+        require(channel.connectionHops.length == 1);
 
         ChannelCounterparty.Data memory expectedCounterparty =
-            ChannelCounterparty.Data({port_id: msg_.portId, channel_id: msg_.channelId});
+            ChannelCounterparty.Data({portId: msg_.portId, channelId: msg_.channelId});
         Channel.Data memory expectedChannel = Channel.Data({
-            state: Channel.State.STATE_OPEN,
+            state: Channel.State.Open,
             ordering: channel.ordering,
             counterparty: expectedCounterparty,
-            connection_hops: getCounterpartyHops(channel.connection_hops[0]),
+            connectionHops: getCounterpartyHops(channel.connectionHops[0]),
             version: channel.version
         });
         require(
@@ -164,13 +164,13 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
                 connection,
                 msg_.proofHeight,
                 msg_.proofAck,
-                channel.counterparty.port_id,
-                channel.counterparty.channel_id,
+                channel.counterparty.portId,
+                channel.counterparty.channelId,
                 Channel.encode(expectedChannel)
             ),
             "failed to verify channel state"
         );
-        channel.state = Channel.State.STATE_OPEN;
+        channel.state = Channel.State.Open;
         updateChannelCommitment(msg_.portId, msg_.channelId);
     }
 
@@ -179,14 +179,14 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
      */
     function channelCloseInit(IBCMsgs.MsgChannelCloseInit calldata msg_) external {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
-        require(channel.state != Channel.State.STATE_CLOSED, "channel state is already CLOSED");
+        require(channel.state != Channel.State.Closed, "channel state is already CLOSED");
 
         // TODO authenticates a port binding
 
-        ConnectionEnd.Data storage connection = connections[channel.connection_hops[0]];
-        require(connection.state == ConnectionEnd.State.STATE_OPEN, "connection state is not OPEN");
+        ConnectionEnd.Data storage connection = connections[channel.connectionHops[0]];
+        require(connection.state == ConnectionEnd.State.Open, "connection state is not OPEN");
 
-        channel.state = Channel.State.STATE_CLOSED;
+        channel.state = Channel.State.Closed;
         updateChannelCommitment(msg_.portId, msg_.channelId);
     }
 
@@ -196,21 +196,21 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
      */
     function channelCloseConfirm(IBCMsgs.MsgChannelCloseConfirm calldata msg_) external {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
-        require(channel.state != Channel.State.STATE_CLOSED, "channel state is already CLOSED");
+        require(channel.state != Channel.State.Closed, "channel state is already CLOSED");
 
         // TODO authenticates a port binding
 
-        require(channel.connection_hops.length == 1);
-        ConnectionEnd.Data storage connection = connections[channel.connection_hops[0]];
-        require(connection.state == ConnectionEnd.State.STATE_OPEN, "connection state is not OPEN");
+        require(channel.connectionHops.length == 1);
+        ConnectionEnd.Data storage connection = connections[channel.connectionHops[0]];
+        require(connection.state == ConnectionEnd.State.Open, "connection state is not OPEN");
 
         ChannelCounterparty.Data memory expectedCounterparty =
-            ChannelCounterparty.Data({port_id: msg_.portId, channel_id: msg_.channelId});
+            ChannelCounterparty.Data({portId: msg_.portId, channelId: msg_.channelId});
         Channel.Data memory expectedChannel = Channel.Data({
-            state: Channel.State.STATE_CLOSED,
+            state: Channel.State.Closed,
             ordering: channel.ordering,
             counterparty: expectedCounterparty,
-            connection_hops: getCounterpartyHops(channel.connection_hops[0]),
+            connectionHops: getCounterpartyHops(channel.connectionHops[0]),
             version: channel.version
         });
         require(
@@ -218,13 +218,13 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
                 connection,
                 msg_.proofHeight,
                 msg_.proofInit,
-                channel.counterparty.port_id,
-                channel.counterparty.channel_id,
+                channel.counterparty.portId,
+                channel.counterparty.channelId,
                 Channel.encode(expectedChannel)
             ),
             "failed to verify channel state"
         );
-        channel.state = Channel.State.STATE_CLOSED;
+        channel.state = Channel.State.Closed;
         updateChannelCommitment(msg_.portId, msg_.channelId);
     }
 
@@ -243,13 +243,13 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         string memory channelId,
         bytes memory channelBytes
     ) private returns (bool) {
-        return getClient(connection.client_id).verifyMembership(
-            connection.client_id,
+        return getClient(connection.clientId).verifyMembership(
+            connection.clientId,
             height,
             0,
             0,
             proof,
-            connection.counterparty.prefix.key_prefix,
+            connection.counterparty.prefix.keyPrefix,
             IBCCommitment.channelPath(portId, channelId),
             channelBytes
         );
@@ -259,7 +259,7 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
 
     function getCounterpartyHops(string memory connectionId) internal view returns (string[] memory hops) {
         hops = new string[](1);
-        hops[0] = connections[connectionId].counterparty.connection_id;
+        hops[0] = connections[connectionId].counterparty.connectionId;
         return hops;
     }
 

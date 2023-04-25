@@ -7,7 +7,7 @@ library GoogleProtobufAny {
 
   //struct definition
   struct Data {
-    string type_url;
+    string typeUrl;
     bytes value;
   }
 
@@ -114,7 +114,7 @@ library GoogleProtobufAny {
     if (isNil(r)) {
       counters[1] += 1;
     } else {
-      r.type_url = x;
+      r.typeUrl = x;
       if (counters[1] > 0) counters[1] -= 1;
     }
     return sz;
@@ -186,7 +186,7 @@ library GoogleProtobufAny {
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_string(r.type_url, pointer, bs);
+    pointer += ProtoBufRuntime._encode_string(r.typeUrl, pointer, bs);
     pointer += ProtoBufRuntime._encode_key(
       2,
       ProtoBufRuntime.WireType.LengthDelim,
@@ -237,7 +237,7 @@ library GoogleProtobufAny {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.type_url).length);
+    e += 1 + ProtoBufRuntime._sz_lendelim(bytes(r.typeUrl).length);
     e += 1 + ProtoBufRuntime._sz_lendelim(r.value.length);
     return e;
   }
@@ -249,7 +249,7 @@ library GoogleProtobufAny {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.type_url = input.type_url;
+    output.typeUrl = input.typeUrl;
     output.value = input.value;
 
   }

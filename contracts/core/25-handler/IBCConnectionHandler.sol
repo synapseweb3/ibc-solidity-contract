@@ -30,7 +30,7 @@ abstract contract IBCConnectionHandler {
         );
         require(success);
         connectionId = abi.decode(res, (string));
-        emit OpenInitConnection(connectionId, msg_.clientId, msg_.counterparty.connection_id, msg_.counterparty.client_id);
+        emit OpenInitConnection(connectionId, msg_.clientId, msg_.counterparty.connectionId, msg_.counterparty.clientId);
         return connectionId;
     }
 
@@ -43,7 +43,7 @@ abstract contract IBCConnectionHandler {
         );
         require(success);
         connectionId = abi.decode(res, (string));
-        emit OpenTryConnection(connectionId, msg_.clientId, msg_.counterparty.connection_id, msg_.counterparty.client_id);
+        emit OpenTryConnection(connectionId, msg_.clientId, msg_.counterparty.connectionId, msg_.counterparty.clientId);
         return connectionId;
     }
 

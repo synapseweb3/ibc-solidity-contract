@@ -37,7 +37,7 @@ contract IBCClient is IBCStore, IIBCClient {
         // update commitments
         commitments[keccak256(IBCCommitment.clientStatePath(clientId))] = clientStateCommitment;
         commitments[IBCCommitment.consensusStateCommitmentKey(
-            clientId, update.height.revision_number, update.height.revision_height
+            clientId, update.height.revisionNumber, update.height.revisionHeight
         )] = update.consensusStateCommitment;
         consensusHeights[clientId].push(update.height);
         clientIds.push(clientId);
@@ -57,7 +57,7 @@ contract IBCClient is IBCStore, IIBCClient {
         commitments[keccak256(IBCCommitment.clientStatePath(msg_.clientId))] = clientStateCommitment;
         for (uint256 i = 0; i < updates.length; i++) {
             commitments[IBCCommitment.consensusStateCommitmentKey(
-                msg_.clientId, updates[i].height.revision_number, updates[i].height.revision_height
+                msg_.clientId, updates[i].height.revisionNumber, updates[i].height.revisionHeight
             )] = updates[i].consensusStateCommitment;
             consensusHeights[msg_.clientId].push(updates[i].height);
         }

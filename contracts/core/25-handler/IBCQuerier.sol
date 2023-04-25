@@ -28,9 +28,9 @@ abstract contract IBCQuerier is IBCStore {
 
     function getChannelClientState(string calldata portId, string calldata channelId) external view returns (bytes memory, bool) {
         Channel.Data memory channel = channels[portId][channelId];
-        string memory connectionId = channel.connection_hops[0];
+        string memory connectionId = channel.connectionHops[0];
         ConnectionEnd.Data memory connection = connections[connectionId];
-        return getClient(connection.client_id).getClientState(connection.client_id);
+        return getClient(connection.clientId).getClientState(connection.clientId);
     }
 
     function getConsensusState(string calldata clientId, Height.Data calldata height)
@@ -43,7 +43,7 @@ abstract contract IBCQuerier is IBCStore {
 
     function getConnection(string calldata connectionId) external view returns (ConnectionEnd.Data memory, bool) {
         ConnectionEnd.Data storage connection = connections[connectionId];
-        return (connection, connection.state != ConnectionEnd.State.STATE_UNINITIALIZED_UNSPECIFIED);
+        return (connection, connection.state != ConnectionEnd.State.UninitializedUnspecified);
     }
 
     function getConnections() external view returns (IdentifiedConnectionEnd.Data[] memory) {
@@ -51,8 +51,8 @@ abstract contract IBCQuerier is IBCStore {
         for (uint i = 0; i < connectionIds.length; i++) {
             string memory connectionId = connectionIds[i];
             identifiedConnectionEnds[i] = IdentifiedConnectionEnd.Data({
-                connection_id: connectionId,
-                connection_end: connections[connectionId]
+                connectionId: connectionId,
+                connectionEnd: connections[connectionId]
             });
         }
         return identifiedConnectionEnds;
@@ -65,7 +65,7 @@ abstract contract IBCQuerier is IBCStore {
     function getChannel(string calldata portId, string calldata channelId) external view returns (Channel.Data memory, bool)
     {
         Channel.Data storage channel = channels[portId][channelId];
-        return (channel, channel.state != Channel.State.STATE_UNINITIALIZED_UNSPECIFIED);
+        return (channel, channel.state != Channel.State.UninitializedUnspecified);
     }
 
     function getChannels() external view returns (IdentifiedChannel.Data[] memory)
@@ -82,10 +82,10 @@ abstract contract IBCQuerier is IBCStore {
                     state: channel.state,
                     ordering: channel.ordering,
                     counterparty: channel.counterparty,
-                    connection_hops: channel.connection_hops,
+                    connectionHops: channel.connectionHops,
                     version: channel.version,
-                    port_id: portId,
-                    channel_id: channelId
+                    portId: portId,
+                    channelId: channelId
                 });
                 sequence++;
             }
@@ -103,10 +103,10 @@ abstract contract IBCQuerier is IBCStore {
                 state: channel.state,
                 ordering: channel.ordering,
                 counterparty: channel.counterparty,
-                connection_hops: channel.connection_hops,
+                connectionHops: channel.connectionHops,
                 version: channel.version,
-                port_id: connectionId,
-                channel_id: channelId
+                portId: connectionId,
+                channelId: channelId
             });
         }
         return identifiedChannels;
@@ -135,22 +135,22 @@ abstract contract IBCQuerier is IBCStore {
     }
 
     function getHashedPacketCommitmentSequences(string calldata portId, string calldata channelId) external view returns (uint64[] memory) {
-        uint64 max_seq = nextSequenceSends[portId][channelId];
+        uint64 maxSeq = nextSequenceSends[portId][channelId];
         uint len = 0;
-        for (uint64 i = 0; i < max_seq; i++) {
+        for (uint64 i = 0; i < maxSeq; i++) {
             bytes32 commitment = commitments[keccak256(IBCCommitment.packetCommitmentPath(portId, channelId, i))];
             if (commitment == bytes32(0)) {
                 len++;
             }
         }
-        uint64[] memory commitment_sequences = new uint64[](len);
-        for (uint64 i = 0; i < max_seq; i++) {
+        uint64[] memory commitmentSequences = new uint64[](len);
+        for (uint64 i = 0; i < maxSeq; i++) {
             bytes32 commitment = commitments[keccak256(IBCCommitment.packetCommitmentPath(portId, channelId, i))];
             if (commitment == bytes32(0)) {
-                commitment_sequences[len] = i;
+                commitmentSequences[len] = i;
             }
         }
-        return commitment_sequences;
+        return commitmentSequences;
     }
 
     function hasPacketReceipt(string calldata portId, string calldata channelId, uint64 sequence)
