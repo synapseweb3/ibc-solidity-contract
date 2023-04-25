@@ -8,8 +8,8 @@ library Height {
 
   //struct definition
   struct Data {
-    uint64 revision_number;
-    uint64 revision_height;
+    uint64 revisionNumber;
+    uint64 revisionHeight;
   }
 
   // Decoder section
@@ -58,10 +58,10 @@ library Height {
       (fieldId, wireType, bytesRead) = ProtoBufRuntime._decode_key(pointer, bs);
       pointer += bytesRead;
       if (fieldId == 1) {
-        pointer += _read_revision_number(pointer, bs, r);
+        pointer += _read_revisionNumber(pointer, bs, r);
       } else
       if (fieldId == 2) {
-        pointer += _read_revision_height(pointer, bs, r);
+        pointer += _read_revisionHeight(pointer, bs, r);
       } else
       {
         pointer += ProtoBufRuntime._skip_field_decode(wireType, pointer, bs);
@@ -80,13 +80,13 @@ library Height {
    * @param r The in-memory struct
    * @return The number of bytes decoded
    */
-  function _read_revision_number(
+  function _read_revisionNumber(
     uint256 p,
     bytes memory bs,
     Data memory r
   ) internal pure returns (uint) {
     (uint64 x, uint256 sz) = ProtoBufRuntime._decode_uint64(p, bs);
-    r.revision_number = x;
+    r.revisionNumber = x;
     return sz;
   }
 
@@ -97,13 +97,13 @@ library Height {
    * @param r The in-memory struct
    * @return The number of bytes decoded
    */
-  function _read_revision_height(
+  function _read_revisionHeight(
     uint256 p,
     bytes memory bs,
     Data memory r
   ) internal pure returns (uint) {
     (uint64 x, uint256 sz) = ProtoBufRuntime._decode_uint64(p, bs);
-    r.revision_height = x;
+    r.revisionHeight = x;
     return sz;
   }
 
@@ -139,24 +139,24 @@ library Height {
   {
     uint256 offset = p;
     uint256 pointer = p;
-    
-    if (r.revision_number != 0) {
+
+    if (r.revisionNumber != 0) {
     pointer += ProtoBufRuntime._encode_key(
       1,
       ProtoBufRuntime.WireType.Varint,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_uint64(r.revision_number, pointer, bs);
+    pointer += ProtoBufRuntime._encode_uint64(r.revisionNumber, pointer, bs);
     }
-    if (r.revision_height != 0) {
+    if (r.revisionHeight != 0) {
     pointer += ProtoBufRuntime._encode_key(
       2,
       ProtoBufRuntime.WireType.Varint,
       pointer,
       bs
     );
-    pointer += ProtoBufRuntime._encode_uint64(r.revision_height, pointer, bs);
+    pointer += ProtoBufRuntime._encode_uint64(r.revisionHeight, pointer, bs);
     }
     return pointer - offset;
   }
@@ -201,8 +201,8 @@ library Height {
     Data memory r
   ) internal pure returns (uint) {
     uint256 e;
-    e += 1 + ProtoBufRuntime._sz_uint64(r.revision_number);
-    e += 1 + ProtoBufRuntime._sz_uint64(r.revision_height);
+    e += 1 + ProtoBufRuntime._sz_uint64(r.revisionNumber);
+    e += 1 + ProtoBufRuntime._sz_uint64(r.revisionHeight);
     return e;
   }
   // empty checker
@@ -210,12 +210,12 @@ library Height {
   function _empty(
     Data memory r
   ) internal pure returns (bool) {
-    
-  if (r.revision_number != 0) {
+
+  if (r.revisionNumber != 0) {
     return false;
   }
 
-  if (r.revision_height != 0) {
+  if (r.revisionHeight != 0) {
     return false;
   }
 
@@ -230,8 +230,8 @@ library Height {
    * @param output The in-storage struct
    */
   function store(Data memory input, Data storage output) internal {
-    output.revision_number = input.revision_number;
-    output.revision_height = input.revision_height;
+    output.revisionNumber = input.revisionNumber;
+    output.revisionHeight = input.revisionHeight;
 
   }
 

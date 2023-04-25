@@ -28,11 +28,11 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
     {
         string memory connectionId = generateConnectionIdentifier();
         ConnectionEnd.Data storage connection = connections[connectionId];
-        require(connection.state == ConnectionEnd.State.STATE_UNINITIALIZED_UNSPECIFIED, "connectionId already exists");
-        connection.client_id = msg_.clientId;
+        require(connection.state == ConnectionEnd.State.UninitializedUnspecified, "connectionId already exists");
+        connection.clientId = msg_.clientId;
         setSupportedVersions(connection.versions);
-        connection.state = ConnectionEnd.State.STATE_INIT;
-        connection.delay_period = msg_.delayPeriod;
+        connection.state = ConnectionEnd.State.Init;
+        connection.delayPeriod = msg_.delayPeriod;
         connection.counterparty = msg_.counterparty;
         updateConnectionCommitment(connectionId);
         connectionIds.push(connectionId);
@@ -50,28 +50,28 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
 
         string memory connectionId = generateConnectionIdentifier();
         ConnectionEnd.Data storage connection = connections[connectionId];
-        require(connection.state == ConnectionEnd.State.STATE_UNINITIALIZED_UNSPECIFIED, "connectionId already exists");
-        connection.client_id = msg_.clientId;
+        require(connection.state == ConnectionEnd.State.UninitializedUnspecified, "connectionId already exists");
+        connection.clientId = msg_.clientId;
         setSupportedVersions(connection.versions);
-        connection.state = ConnectionEnd.State.STATE_TRYOPEN;
-        connection.delay_period = msg_.delayPeriod;
+        connection.state = ConnectionEnd.State.TryOpen;
+        connection.delayPeriod = msg_.delayPeriod;
         connection.counterparty = msg_.counterparty;
 
         ConnectionEnd.Data memory expectedConnection = ConnectionEnd.Data({
-            client_id: msg_.counterparty.client_id,
+            clientId: msg_.counterparty.clientId,
             versions: msg_.counterpartyVersions,
-            state: ConnectionEnd.State.STATE_INIT,
-            delay_period: msg_.delayPeriod,
+            state: ConnectionEnd.State.Init,
+            delayPeriod: msg_.delayPeriod,
             counterparty: Counterparty.Data({
-                client_id: msg_.clientId,
-                connection_id: "",
-                prefix: MerklePrefix.Data({key_prefix: bytes(commitmentPrefix)})
+                clientId: msg_.clientId,
+                connectionId: "",
+                prefix: MerklePrefix.Data({keyPrefix: bytes(commitmentPrefix)})
             })
         });
 
         require(
             verifyConnectionState(
-                connection, msg_.proofHeight, msg_.proofInit, msg_.counterparty.connection_id, expectedConnection
+                connection, msg_.proofHeight, msg_.proofInit, msg_.counterparty.connectionId, expectedConnection
             ),
             "failed to verify connection state"
         );
@@ -79,7 +79,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             verifyClientState(
                 connection,
                 msg_.proofHeight,
-                IBCCommitment.clientStatePath(connection.counterparty.client_id),
+                IBCCommitment.clientStatePath(connection.counterparty.clientId),
                 msg_.proofClient,
                 msg_.clientStateBytes
             ),
@@ -99,13 +99,13 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
      */
     function connectionOpenAck(IBCMsgs.MsgConnectionOpenAck calldata msg_) external override {
         ConnectionEnd.Data storage connection = connections[msg_.connectionId];
-        if (connection.state != ConnectionEnd.State.STATE_INIT && connection.state != ConnectionEnd.State.STATE_TRYOPEN)
+        if (connection.state != ConnectionEnd.State.Init && connection.state != ConnectionEnd.State.TryOpen)
         {
             revert("connection state is not INIT or TRYOPEN");
-        } else if (connection.state == ConnectionEnd.State.STATE_INIT && !isSupportedVersion(msg_.version)) {
+        } else if (connection.state == ConnectionEnd.State.Init && !isSupportedVersion(msg_.version)) {
             revert("connection state is in INIT but the provided version is not supported");
         } else if (
-            connection.state == ConnectionEnd.State.STATE_TRYOPEN
+            connection.state == ConnectionEnd.State.TryOpen
                 && (connection.versions.length != 1 || !isEqualVersion(connection.versions[0], msg_.version))
         ) {
             revert(
@@ -113,19 +113,19 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             );
         }
 
-        require(validateSelfClient(msg_.clientStateBytes), "failed to validate self client state");
+        require(validateSelfClient(msg_.clientStateBytes), "failed to validate self clien t state");
 
         Counterparty.Data memory expectedCounterparty = Counterparty.Data({
-            client_id: connection.client_id,
-            connection_id: msg_.connectionId,
-            prefix: MerklePrefix.Data({key_prefix: bytes(commitmentPrefix)})
+            clientId: connection.clientId,
+            connectionId: msg_.connectionId,
+            prefix: MerklePrefix.Data({keyPrefix: bytes(commitmentPrefix)})
         });
 
         ConnectionEnd.Data memory expectedConnection = ConnectionEnd.Data({
-            client_id: connection.counterparty.client_id,
+            clientId: connection.counterparty.clientId,
             versions: makeVersionArray(msg_.version),
-            state: ConnectionEnd.State.STATE_TRYOPEN,
-            delay_period: connection.delay_period,
+            state: ConnectionEnd.State.TryOpen,
+            delayPeriod: connection.delayPeriod,
             counterparty: expectedCounterparty
         });
 
@@ -139,7 +139,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             verifyClientState(
                 connection,
                 msg_.proofHeight,
-                IBCCommitment.clientStatePath(connection.counterparty.client_id),
+                IBCCommitment.clientStatePath(connection.counterparty.clientId),
                 msg_.proofClient,
                 msg_.clientStateBytes
             ),
@@ -147,9 +147,9 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         );
         // TODO we should also verify a consensus state
 
-        connection.state = ConnectionEnd.State.STATE_OPEN;
+        connection.state = ConnectionEnd.State.Open;
         copyVersions(expectedConnection.versions, connection.versions);
-        connection.counterparty.connection_id = msg_.counterpartyConnectionID;
+        connection.counterparty.connectionId = msg_.counterpartyConnectionID;
         updateConnectionCommitment(msg_.connectionId);
     }
 
@@ -159,30 +159,30 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
      */
     function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external override {
         ConnectionEnd.Data storage connection = connections[msg_.connectionId];
-        require(connection.state == ConnectionEnd.State.STATE_TRYOPEN, "connection state is not TRYOPEN");
+        require(connection.state == ConnectionEnd.State.TryOpen, "connection state is not TRYOPEN");
 
         Counterparty.Data memory expectedCounterparty = Counterparty.Data({
-            client_id: connection.client_id,
-            connection_id: msg_.connectionId,
-            prefix: MerklePrefix.Data({key_prefix: bytes(commitmentPrefix)})
+            clientId: connection.clientId,
+            connectionId: msg_.connectionId,
+            prefix: MerklePrefix.Data({keyPrefix: bytes(commitmentPrefix)})
         });
 
         ConnectionEnd.Data memory expectedConnection = ConnectionEnd.Data({
-            client_id: connection.counterparty.client_id,
+            clientId: connection.counterparty.clientId,
             versions: connection.versions,
-            state: ConnectionEnd.State.STATE_OPEN,
-            delay_period: connection.delay_period,
+            state: ConnectionEnd.State.Open,
+            delayPeriod: connection.delayPeriod,
             counterparty: expectedCounterparty
         });
 
         require(
             verifyConnectionState(
-                connection, msg_.proofHeight, msg_.proofAck, connection.counterparty.connection_id, expectedConnection
+                connection, msg_.proofHeight, msg_.proofAck, connection.counterparty.connectionId, expectedConnection
             ),
             "failed to verify connection state"
         );
 
-        connection.state = ConnectionEnd.State.STATE_OPEN;
+        connection.state = ConnectionEnd.State.Open;
         updateConnectionCommitment(msg_.connectionId);
     }
 
@@ -200,8 +200,8 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         bytes memory proof,
         bytes memory clientStateBytes
     ) private returns (bool) {
-        return getClient(connection.client_id).verifyMembership(
-            connection.client_id, height, 0, 0, proof, connection.counterparty.prefix.key_prefix, path, clientStateBytes
+        return getClient(connection.clientId).verifyMembership(
+            connection.clientId, height, 0, 0, proof, connection.counterparty.prefix.keyPrefix, path, clientStateBytes
         );
     }
 
@@ -212,15 +212,15 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         bytes memory proof,
         bytes memory consensusStateBytes
     ) private returns (bool) {
-        return getClient(connection.client_id).verifyMembership(
-            connection.client_id,
+        return getClient(connection.clientId).verifyMembership(
+            connection.clientId,
             height,
             0,
             0,
             proof,
-            connection.counterparty.prefix.key_prefix,
+            connection.counterparty.prefix.keyPrefix,
             IBCCommitment.consensusStatePath(
-                connection.counterparty.client_id, consensusHeight.revision_number, consensusHeight.revision_height
+                connection.counterparty.clientId, consensusHeight.revisionNumber, consensusHeight.revisionHeight
             ),
             consensusStateBytes
         );
@@ -233,13 +233,13 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         string memory connectionId,
         ConnectionEnd.Data memory counterpartyConnection
     ) private returns (bool) {
-        return getClient(connection.client_id).verifyMembership(
-            connection.client_id,
+        return getClient(connection.clientId).verifyMembership(
+            connection.clientId,
             height,
             0,
             0,
             proof,
-            connection.counterparty.prefix.key_prefix,
+            connection.counterparty.prefix.keyPrefix,
             IBCCommitment.connectionPath(connectionId),
             ConnectionEnd.encode(counterpartyConnection)
         );

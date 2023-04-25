@@ -61,12 +61,12 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         FungibleTokenPacketData.Data memory data = FungibleTokenPacketData.decode(packet.data);
         strings.slice memory denom = data.denom.toSlice();
         strings.slice memory trimedDenom =
-            data.denom.toSlice().beyond(_makeDenomPrefix(packet.source_port, packet.source_channel));
+            data.denom.toSlice().beyond(_makeDenomPrefix(packet.sourcePort, packet.sourceChannel));
         if (!denom.equals(trimedDenom)) {
             // receiver is source chain
             return _newAcknowledgement(
                 _transferFrom(
-                    _getEscrowAddress(packet.destination_channel),
+                    _getEscrowAddress(packet.destinationChannel),
                     data.receiver.toAddress(0),
                     trimedDenom.toString(),
                     data.amount
@@ -74,7 +74,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
             );
         } else {
             string memory prefixedDenom =
-                _makeDenomPrefix(packet.destination_port, packet.destination_channel).concat(denom);
+                _makeDenomPrefix(packet.destinationPort, packet.destinationChannel).concat(denom);
             return _newAcknowledgement(_mint(data.receiver.toAddress(0), prefixedDenom, data.amount));
         }
     }
@@ -85,7 +85,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         override
     {
         if (!_isSuccessAcknowledgement(acknowledgement)) {
-            _refundTokens(FungibleTokenPacketData.decode(packet.data), packet.source_port, packet.source_channel);
+            _refundTokens(FungibleTokenPacketData.decode(packet.data), packet.sourcePort, packet.sourceChannel);
         }
     }
 
@@ -148,13 +148,13 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         ibcHandler.sendPacket(
             Packet.Data({
                 sequence: ibcHandler.getNextSequenceSend(sourcePort, sourceChannel),
-                source_port: sourcePort,
-                source_channel: sourceChannel,
-                destination_port: channel.counterparty.port_id,
-                destination_channel: channel.counterparty.channel_id,
+                sourcePort: sourcePort,
+                sourceChannel: sourceChannel,
+                destinationPort: channel.counterparty.portId,
+                destinationChannel: channel.counterparty.channelId,
                 data: FungibleTokenPacketData.encode(data),
-                timeout_height: Height.Data({revision_number: 0, revision_height: timeoutHeight}),
-                timeout_timestamp: 0
+                timeoutHeight: Height.Data({revisionNumber: 0, revisionHeight: timeoutHeight}),
+                timeoutTimestamp: 0
             })
         );
     }
