@@ -36,14 +36,14 @@ abstract contract IBCQuerier is IBCStore {
     function getConsensusState(string calldata clientId, Height.Data calldata height)
         external
         view
-        returns (bytes memory consensusStateBytes, bool)
+        returns (bytes memory consensusState, bool)
     {
         return getClient(clientId).getConsensusState(clientId, height);
     }
 
     function getConnection(string calldata connectionId) external view returns (ConnectionEnd.Data memory, bool) {
         ConnectionEnd.Data storage connection = connections[connectionId];
-        return (connection, connection.state != ConnectionEnd.State.UninitializedUnspecified);
+        return (connection, connection.state != ConnectionEnd.State.Uninitialized);
     }
 
     function getConnections() external view returns (IdentifiedConnectionEnd.Data[] memory) {
@@ -65,7 +65,7 @@ abstract contract IBCQuerier is IBCStore {
     function getChannel(string calldata portId, string calldata channelId) external view returns (Channel.Data memory, bool)
     {
         Channel.Data storage channel = channels[portId][channelId];
-        return (channel, channel.state != Channel.State.UninitializedUnspecified);
+        return (channel, channel.state != Channel.State.Uninitialized);
     }
 
     function getChannels() external view returns (IdentifiedChannel.Data[] memory)

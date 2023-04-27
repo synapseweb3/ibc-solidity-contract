@@ -28,7 +28,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
     {
         string memory connectionId = generateConnectionIdentifier();
         ConnectionEnd.Data storage connection = connections[connectionId];
-        require(connection.state == ConnectionEnd.State.UninitializedUnspecified, "connectionId already exists");
+        require(connection.state == ConnectionEnd.State.Uninitialized, "connectionId already exists");
         connection.clientId = msg_.clientId;
         setSupportedVersions(connection.versions);
         connection.state = ConnectionEnd.State.Init;
@@ -45,12 +45,12 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
      * code is executed on chain B).
      */
     function connectionOpenTry(IBCMsgs.MsgConnectionOpenTry calldata msg_) external override returns (string memory) {
-        require(validateSelfClient(msg_.clientStateBytes), "failed to validate self client state");
+        require(validateSelfClient(msg_.clientState), "failed to validate self client state");
         require(msg_.counterpartyVersions.length > 0, "counterpartyVersions length must be greater than 0");
 
         string memory connectionId = generateConnectionIdentifier();
         ConnectionEnd.Data storage connection = connections[connectionId];
-        require(connection.state == ConnectionEnd.State.UninitializedUnspecified, "connectionId already exists");
+        require(connection.state == ConnectionEnd.State.Uninitialized, "connectionId already exists");
         connection.clientId = msg_.clientId;
         setSupportedVersions(connection.versions);
         connection.state = ConnectionEnd.State.TryOpen;
@@ -81,7 +81,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
                 msg_.proofHeight,
                 IBCCommitment.clientStatePath(connection.counterparty.clientId),
                 msg_.proofClient,
-                msg_.clientStateBytes
+                msg_.clientState
             ),
             "failed to verify clientState"
         );
@@ -113,7 +113,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             );
         }
 
-        require(validateSelfClient(msg_.clientStateBytes), "failed to validate self clien t state");
+        require(validateSelfClient(msg_.clientState), "failed to validate self clien t state");
 
         Counterparty.Data memory expectedCounterparty = Counterparty.Data({
             clientId: connection.clientId,
@@ -131,7 +131,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
 
         require(
             verifyConnectionState(
-                connection, msg_.proofHeight, msg_.proofTry, msg_.counterpartyConnectionID, expectedConnection
+                connection, msg_.proofHeight, msg_.proofTry, msg_.counterpartyConnectionId, expectedConnection
             ),
             "failed to verify connection state"
         );
@@ -141,7 +141,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
                 msg_.proofHeight,
                 IBCCommitment.clientStatePath(connection.counterparty.clientId),
                 msg_.proofClient,
-                msg_.clientStateBytes
+                msg_.clientState
             ),
             "failed to verify clientState"
         );
@@ -149,7 +149,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
 
         connection.state = ConnectionEnd.State.Open;
         copyVersions(expectedConnection.versions, connection.versions);
-        connection.counterparty.connectionId = msg_.counterpartyConnectionID;
+        connection.counterparty.connectionId = msg_.counterpartyConnectionId;
         updateConnectionCommitment(msg_.connectionId);
     }
 
@@ -198,10 +198,10 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         Height.Data memory height,
         bytes memory path,
         bytes memory proof,
-        bytes memory clientStateBytes
+        bytes memory clientState
     ) private returns (bool) {
         return getClient(connection.clientId).verifyMembership(
-            connection.clientId, height, 0, 0, proof, connection.counterparty.prefix.keyPrefix, path, clientStateBytes
+            connection.clientId, height, 0, 0, proof, connection.counterparty.prefix.keyPrefix, path, clientState
         );
     }
 
@@ -210,7 +210,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         Height.Data memory height,
         Height.Data memory consensusHeight,
         bytes memory proof,
-        bytes memory consensusStateBytes
+        bytes memory consensusState
     ) private returns (bool) {
         return getClient(connection.clientId).verifyMembership(
             connection.clientId,
@@ -222,7 +222,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             IBCCommitment.consensusStatePath(
                 connection.counterparty.clientId, consensusHeight.revisionNumber, consensusHeight.revisionHeight
             ),
-            consensusStateBytes
+            consensusState
         );
     }
 

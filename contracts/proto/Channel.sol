@@ -9,7 +9,7 @@ library Channel {
   //enum definition
   // Solidity enum definitions
   enum State {
-    UninitializedUnspecified,
+    Uninitialized,
     Init,
     TryOpen,
     Open,
@@ -20,7 +20,7 @@ library Channel {
   // Solidity enum encoder
   function encode_State(State x) internal pure returns (int32) {
 
-    if (x == State.UninitializedUnspecified) {
+    if (x == State.Uninitialized) {
       return 0;
     }
 
@@ -47,7 +47,7 @@ library Channel {
   function decode_State(int64 x) internal pure returns (State) {
 
     if (x == 0) {
-      return State.UninitializedUnspecified;
+      return State.Uninitialized;
     }
 
     if (x == 1) {

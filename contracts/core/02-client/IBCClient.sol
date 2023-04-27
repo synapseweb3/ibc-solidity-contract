@@ -31,7 +31,7 @@ contract IBCClient is IBCStore, IIBCClient {
         clientTypes[clientId] = msg_.clientType;
         clientImpls[clientId] = clientImpl;
         (bytes32 clientStateCommitment, ConsensusStateUpdate memory update, bool ok) =
-            ILightClient(clientImpl).createClient(clientId, msg_.clientStateBytes, msg_.consensusStateBytes);
+            ILightClient(clientImpl).createClient(clientId, msg_.clientState, msg_.consensusState);
         require(ok, "failed to create client");
 
         // update commitments

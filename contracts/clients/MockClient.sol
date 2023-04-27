@@ -37,7 +37,7 @@ contract MockClient is ILightClient {
     /**
      * @dev createClient creates a new client with the given state
      */
-    function createClient(string calldata clientId, bytes calldata clientStateBytes, bytes calldata consensusStateBytes)
+    function createClient(string calldata clientId, bytes calldata clientState, bytes calldata consensusState)
         external
         override
         onlyIBC
@@ -46,11 +46,11 @@ contract MockClient is ILightClient {
         ClientState.Data memory clientState;
         ConsensusState.Data memory consensusState;
 
-        (clientState, ok) = unmarshalClientState(clientStateBytes);
+        (clientState, ok) = unmarshalClientState(clientState);
         if (!ok) {
             return (clientStateCommitment, update, false);
         }
-        (consensusState, ok) = unmarshalConsensusState(consensusStateBytes);
+        (consensusState, ok) = unmarshalConsensusState(consensusState);
         if (!ok) {
             return (clientStateCommitment, update, false);
         }
@@ -63,9 +63,9 @@ contract MockClient is ILightClient {
         clientStates[clientId] = clientState;
         consensusStates[clientId][clientState.latestHeight.toUint128()] = consensusState;
         return (
-            keccak256(clientStateBytes),
+            keccak256(clientState),
             ConsensusStateUpdate({
-                consensusStateCommitment: keccak256(consensusStateBytes),
+                consensusStateCommitment: keccak256(consensusState),
                 height: clientState.latestHeight
             }),
             true
@@ -172,10 +172,10 @@ contract MockClient is ILightClient {
      * @dev getClientState returns the clientState corresponding to `clientId`.
      *      If it's not found, the function returns false.
      */
-    function getClientState(string calldata clientId) external view returns (bytes memory clientStateBytes, bool) {
+    function getClientState(string calldata clientId) external view returns (bytes memory clientState, bool) {
         ClientState.Data storage clientState = clientStates[clientId];
         if (clientState.latestHeight.revisionHeight == 0) {
-            return (clientStateBytes, false);
+            return (clientState, false);
         }
         return (Any.encode(Any.Data({typeUrl: CLIENT_STATE_TYPE_URL, value: ClientState.encode(clientState)})), true);
     }
@@ -187,11 +187,11 @@ contract MockClient is ILightClient {
     function getConsensusState(string calldata clientId, Height.Data calldata height)
         external
         view
-        returns (bytes memory consensusStateBytes, bool)
+        returns (bytes memory consensusState, bool)
     {
         ConsensusState.Data storage consensusState = consensusStates[clientId][height.toUint128()];
         if (consensusState.timestamp == 0) {
-            return (consensusStateBytes, false);
+            return (consensusState, false);
         }
         return (
             Any.encode(Any.Data({typeUrl: CONSENSUS_STATE_TYPE_URL, value: ConsensusState.encode(consensusState)})),
