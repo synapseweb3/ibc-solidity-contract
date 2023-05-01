@@ -85,7 +85,7 @@ library Channel {
 
   // Solidity enum definitions
   enum Order {
-    NoneUnspecified,
+    None,
     Unordered,
     Ordered
   }
@@ -94,7 +94,7 @@ library Channel {
   // Solidity enum encoder
   function encode_Order(Order x) internal pure returns (int32) {
 
-    if (x == Order.NoneUnspecified) {
+    if (x == Order.None) {
       return 0;
     }
 
@@ -113,7 +113,7 @@ library Channel {
   function decode_Order(int64 x) internal pure returns (Order) {
 
     if (x == 0) {
-      return Order.NoneUnspecified;
+      return Order.None;
     }
 
     if (x == 1) {
