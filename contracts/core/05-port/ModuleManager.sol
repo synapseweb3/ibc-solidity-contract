@@ -11,6 +11,8 @@ abstract contract ModuleManager {
      * @dev bindPort binds to an unallocated port, failing if the port has already been allocated.
      */
     function bindPort(string calldata portId, address moduleAddress) public virtual {
+        uint length = bytes(portId).length;
+        require(length >= 2 && length <= 128, "invalid port id length");
         claimCapability(portCapabilityPath(portId), moduleAddress);
     }
 
