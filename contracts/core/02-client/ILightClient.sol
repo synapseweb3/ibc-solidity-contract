@@ -12,7 +12,7 @@ interface ILightClient {
      * @dev createClient creates a new client with the given state.
      * If succeeded, it returns a commitment for the initial state.
      */
-    function createClient(string calldata clientId, bytes calldata clientStateBytes, bytes calldata consensusStateBytes)
+    function createClient(string calldata clientId, bytes calldata clientState, bytes calldata consensusState)
         external
         returns (bytes32 clientStateCommitment, ConsensusStateUpdate memory update, bool ok);
 

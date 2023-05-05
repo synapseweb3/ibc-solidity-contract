@@ -58,10 +58,10 @@ library Height {
       (fieldId, wireType, bytesRead) = ProtoBufRuntime._decode_key(pointer, bs);
       pointer += bytesRead;
       if (fieldId == 1) {
-        pointer += _read_revisionNumber(pointer, bs, r);
+        pointer += _read_revision_number(pointer, bs, r);
       } else
       if (fieldId == 2) {
-        pointer += _read_revisionHeight(pointer, bs, r);
+        pointer += _read_revision_height(pointer, bs, r);
       } else
       {
         pointer += ProtoBufRuntime._skip_field_decode(wireType, pointer, bs);
@@ -80,7 +80,7 @@ library Height {
    * @param r The in-memory struct
    * @return The number of bytes decoded
    */
-  function _read_revisionNumber(
+  function _read_revision_number(
     uint256 p,
     bytes memory bs,
     Data memory r
@@ -97,7 +97,7 @@ library Height {
    * @param r The in-memory struct
    * @return The number of bytes decoded
    */
-  function _read_revisionHeight(
+  function _read_revision_height(
     uint256 p,
     bytes memory bs,
     Data memory r

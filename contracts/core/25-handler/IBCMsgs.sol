@@ -13,8 +13,8 @@ library IBCMsgs {
 
     struct MsgCreateClient {
         string clientType;
-        bytes clientStateBytes;
-        bytes consensusStateBytes;
+        bytes clientState;
+        bytes consensusState;
     }
 
     struct MsgUpdateClient {
@@ -35,7 +35,7 @@ library IBCMsgs {
         Counterparty.Data counterparty; // counterpartyConnectionIdentifier, counterpartyPrefix and counterpartyClientIdentifier
         uint64 delayPeriod;
         string clientId; // clientID of chainA
-        bytes clientStateBytes; // clientState that chainA has for chainB
+        bytes clientState; // clientState that chainA has for chainB
         Version.Data[] counterpartyVersions; // supported versions of chain A
         bytes proofInit; // proof that chainA stored connectionEnd in state (on ConnOpenInit)
         bytes proofClient; // proof that chainA stored a light client of chainB
@@ -46,9 +46,9 @@ library IBCMsgs {
 
     struct MsgConnectionOpenAck {
         string connectionId;
-        bytes clientStateBytes; // client state for chainA on chainB
+        bytes clientState; // client state for chainA on chainB
         Version.Data version; // version that ChainB chose in ConnOpenTry
-        string counterpartyConnectionID;
+        string counterpartyConnectionId;
         bytes proofTry; // proof that connectionEnd was added to ChainB state in ConnOpenTry
         bytes proofClient; // proof of client state on chainB for chainA
         bytes proofConsensus; // proof that chainB has stored ConsensusState of chainA on its client

@@ -9,7 +9,7 @@ library Channel {
   //enum definition
   // Solidity enum definitions
   enum State {
-    UninitializedUnspecified,
+    Uninitialized,
     Init,
     TryOpen,
     Open,
@@ -20,7 +20,7 @@ library Channel {
   // Solidity enum encoder
   function encode_State(State x) internal pure returns (int32) {
 
-    if (x == State.UninitializedUnspecified) {
+    if (x == State.Uninitialized) {
       return 0;
     }
 
@@ -47,7 +47,7 @@ library Channel {
   function decode_State(int64 x) internal pure returns (State) {
 
     if (x == 0) {
-      return State.UninitializedUnspecified;
+      return State.Uninitialized;
     }
 
     if (x == 1) {
@@ -85,7 +85,7 @@ library Channel {
 
   // Solidity enum definitions
   enum Order {
-    NoneUnspecified,
+    None,
     Unordered,
     Ordered
   }
@@ -94,7 +94,7 @@ library Channel {
   // Solidity enum encoder
   function encode_Order(Order x) internal pure returns (int32) {
 
-    if (x == Order.NoneUnspecified) {
+    if (x == Order.None) {
       return 0;
     }
 
@@ -113,7 +113,7 @@ library Channel {
   function decode_Order(int64 x) internal pure returns (Order) {
 
     if (x == 0) {
-      return Order.NoneUnspecified;
+      return Order.None;
     }
 
     if (x == 1) {

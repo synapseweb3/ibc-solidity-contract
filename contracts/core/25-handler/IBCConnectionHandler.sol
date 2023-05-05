@@ -52,7 +52,7 @@ abstract contract IBCConnectionHandler {
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenAck.selector, msg_)
         );
         require(success);
-        emit OpenAckConnection(msg_.connectionId, msg_.counterpartyConnectionID);
+        emit OpenAckConnection(msg_.connectionId, msg_.counterpartyConnectionId);
     }
 
     function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external {
