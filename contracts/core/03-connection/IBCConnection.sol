@@ -164,7 +164,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         return ConnectionEnd.Attributes({
             connectionId: msg_.connectionId,
             clientId: connection.clientId,
-            counterpartyConnectionId: msg_.counterpartyConnectionID,
+            counterpartyConnectionId: msg_.counterpartyConnectionId,
             counterpartyClientId: connection.counterparty.clientId
         });
     }
