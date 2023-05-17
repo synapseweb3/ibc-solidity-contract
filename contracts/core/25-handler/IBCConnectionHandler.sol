@@ -14,8 +14,8 @@ abstract contract IBCConnectionHandler {
 
     event OpenInitConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
     event OpenTryConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
-    event OpenAckConnection(string connectionId, string counterpartyConnectionId);
-    event OpenConfirmConnection(string connectionId);
+    event OpenAckConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
+    event OpenConfirmConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
 
     constructor(address ibcConnection) {
         ibcConnectionAddress = ibcConnection;
@@ -23,43 +23,53 @@ abstract contract IBCConnectionHandler {
 
     function connectionOpenInit(IBCMsgs.MsgConnectionOpenInit calldata msg_)
         external
-        returns (string memory connectionId)
+        returns (ConnectionEnd.Attributes memory attr)
     {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenInit.selector, msg_)
         );
         require(success);
-        connectionId = abi.decode(res, (string));
-        emit OpenInitConnection(connectionId, msg_.clientId, msg_.counterparty.connectionId, msg_.counterparty.clientId);
-        return connectionId;
+        attr = abi.decode(res, (ConnectionEnd.Attributes));
+        emit OpenInitConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
+        return attr;
     }
 
     function connectionOpenTry(IBCMsgs.MsgConnectionOpenTry calldata msg_)
         external
-        returns (string memory connectionId)
+        returns (ConnectionEnd.Attributes memory attr)
     {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenTry.selector, msg_)
         );
         require(success);
-        connectionId = abi.decode(res, (string));
-        emit OpenTryConnection(connectionId, msg_.clientId, msg_.counterparty.connectionId, msg_.counterparty.clientId);
-        return connectionId;
+        attr = abi.decode(res, (ConnectionEnd.Attributes));
+        emit OpenTryConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
+        return attr;
     }
 
-    function connectionOpenAck(IBCMsgs.MsgConnectionOpenAck calldata msg_) external {
-        (bool success,) = ibcConnectionAddress.delegatecall(
+    function connectionOpenAck(IBCMsgs.MsgConnectionOpenAck calldata msg_)
+        external
+        returns (ConnectionEnd.Attributes memory attr)
+    {
+        (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenAck.selector, msg_)
         );
         require(success);
-        emit OpenAckConnection(msg_.connectionId, msg_.counterpartyConnectionId);
+        attr = abi.decode(res, (ConnectionEnd.Attributes));
+        emit OpenAckConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
+        return attr;
     }
 
-    function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external {
-        (bool success,) = ibcConnectionAddress.delegatecall(
+    function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_)
+        external
+        returns (ConnectionEnd.Attributes memory attr)
+    {
+        (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenConfirm.selector, msg_)
         );
         require(success);
-        emit OpenConfirmConnection(msg_.connectionId);
+        attr = abi.decode(res, (ConnectionEnd.Attributes));
+        emit OpenConfirmConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
+        return attr;
     }
 }
