@@ -12,8 +12,8 @@ abstract contract IBCConnectionHandler {
     // IBC Connection contract address
     address immutable ibcConnectionAddress;
 
-    event OpenInitConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterPartyConnectionClientId);
-    event OpenTryConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterPartyConnectionClientId);
+    event OpenInitConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
+    event OpenTryConnection(string connectionId, string clientId, string counterpartyConnectionId, string counterpartyClientId);
     event OpenAckConnection(string connectionId, string counterpartyConnectionId);
     event OpenConfirmConnection(string connectionId);
 
