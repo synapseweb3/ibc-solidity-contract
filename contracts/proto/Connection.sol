@@ -6,6 +6,13 @@ import "./Commitment.sol";
 
 library ConnectionEnd {
 
+  struct Attributes {
+    string connectionId;
+    string clientId;
+    string counterpartyConnectionId;
+    string counterpartyClientId;
+  }
+
   //enum definition
   // Solidity enum definitions
   enum State {

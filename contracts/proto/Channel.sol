@@ -6,6 +6,14 @@ import "./Client.sol";
 
 library Channel {
 
+  struct Attributes {
+    string portId;
+    string connectionId;
+    string channelId;
+    string counterpartyPortId;
+    string counterpartyChannelId;
+  }
+
   //enum definition
   // Solidity enum definitions
   enum State {

@@ -24,7 +24,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
     function connectionOpenInit(IBCMsgs.MsgConnectionOpenInit calldata msg_)
         external
         override
-        returns (string memory)
+        returns (ConnectionEnd.Attributes memory)
     {
         string memory connectionId = generateConnectionIdentifier();
         ConnectionEnd.Data storage connection = connections[connectionId];
@@ -37,14 +37,19 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         updateConnectionCommitment(connectionId);
         connectionIds.push(connectionId);
         clientConnectionIds[msg_.clientId].push(connectionId);
-        return connectionId;
+        return ConnectionEnd.Attributes({
+            connectionId: connectionId,
+            clientId: msg_.clientId,
+            counterpartyConnectionId: "",
+            counterpartyClientId: msg_.counterparty.clientId
+        });
     }
 
     /**
      * @dev connectionOpenTry relays notice of a connection attempt on chain A to chain B (this
      * code is executed on chain B).
      */
-    function connectionOpenTry(IBCMsgs.MsgConnectionOpenTry calldata msg_) external override returns (string memory) {
+    function connectionOpenTry(IBCMsgs.MsgConnectionOpenTry calldata msg_) external override returns (ConnectionEnd.Attributes memory) {
         require(validateSelfClient(msg_.clientState), "failed to validate self client state");
         require(msg_.counterpartyVersions.length > 0, "counterpartyVersions length must be greater than 0");
 
@@ -90,14 +95,19 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         updateConnectionCommitment(connectionId);
         connectionIds.push(connectionId);
         clientConnectionIds[msg_.clientId].push(connectionId);
-        return connectionId;
+        return ConnectionEnd.Attributes({
+            connectionId: connectionId,
+            clientId: msg_.clientId,
+            counterpartyConnectionId: msg_.counterparty.connectionId,
+            counterpartyClientId: msg_.counterparty.clientId
+        });
     }
 
     /**
      * @dev connectionOpenAck relays acceptance of a connection open attempt from chain B back
      * to chain A (this code is executed on chain A).
      */
-    function connectionOpenAck(IBCMsgs.MsgConnectionOpenAck calldata msg_) external override {
+    function connectionOpenAck(IBCMsgs.MsgConnectionOpenAck calldata msg_) external override returns (ConnectionEnd.Attributes memory) {
         ConnectionEnd.Data storage connection = connections[msg_.connectionId];
         if (connection.state != ConnectionEnd.State.Init && connection.state != ConnectionEnd.State.TryOpen)
         {
@@ -151,13 +161,19 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         copyVersions(expectedConnection.versions, connection.versions);
         connection.counterparty.connectionId = msg_.counterpartyConnectionId;
         updateConnectionCommitment(msg_.connectionId);
+        return ConnectionEnd.Attributes({
+            connectionId: msg_.connectionId,
+            clientId: connection.clientId,
+            counterpartyConnectionId: msg_.counterpartyConnectionId,
+            counterpartyClientId: connection.counterparty.clientId
+        });
     }
 
     /**
      * @dev connectionOpenConfirm confirms opening of a connection on chain A to chain B, after
      * which the connection is open on both chains (this code is executed on chain B).
      */
-    function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external override {
+    function connectionOpenConfirm(IBCMsgs.MsgConnectionOpenConfirm calldata msg_) external override returns (ConnectionEnd.Attributes memory) {
         ConnectionEnd.Data storage connection = connections[msg_.connectionId];
         require(connection.state == ConnectionEnd.State.TryOpen, "connection state is not TRYOPEN");
 
@@ -184,6 +200,12 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
 
         connection.state = ConnectionEnd.State.Open;
         updateConnectionCommitment(msg_.connectionId);
+        return ConnectionEnd.Attributes({
+            connectionId: msg_.connectionId,
+            clientId: connection.clientId,
+            counterpartyConnectionId: connection.counterparty.connectionId,
+            counterpartyClientId: connection.counterparty.clientId
+        });
     }
 
     function updateConnectionCommitment(string memory connectionId) private {

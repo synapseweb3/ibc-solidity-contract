@@ -20,7 +20,7 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
     /**
      * @dev channelOpenInit is called by a module to initiate a channel opening handshake with a module on another chain.
      */
-    function channelOpenInit(IBCMsgs.MsgChannelOpenInit calldata msg_) external returns (string memory) {
+    function channelOpenInit(IBCMsgs.MsgChannelOpenInit calldata msg_) external override returns (Channel.Attributes memory) {
         require(msg_.channel.connectionHops.length == 1, "connectionHops length must be 1");
         ConnectionEnd.Data storage connection = connections[msg_.channel.connectionHops[0]];
         require(
@@ -42,13 +42,19 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         channelIds.push(channelId);
         portChannelIds[msg_.portId].push(channelId);
         connectionChannelIds[msg_.channel.connectionHops[0]].push(channelId);
-        return channelId;
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: msg_.channel.connectionHops[0],
+            channelId: channelId,
+            counterpartyPortId: msg_.channel.counterparty.portId,
+            counterpartyChannelId: msg_.channel.counterparty.channelId
+        });
     }
 
     /**
      * @dev channelOpenTry is called by a module to accept the first step of a channel opening handshake initiated by a module on another chain.
      */
-    function channelOpenTry(IBCMsgs.MsgChannelOpenTry calldata msg_) external returns (string memory) {
+    function channelOpenTry(IBCMsgs.MsgChannelOpenTry calldata msg_) external override returns (Channel.Attributes memory) {
         require(msg_.channel.connectionHops.length == 1, "connectionHops length must be 1");
         ConnectionEnd.Data storage connection = connections[msg_.channel.connectionHops[0]];
         require(
@@ -92,13 +98,19 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         channelIds.push(channelId);
         portChannelIds[msg_.portId].push(channelId);
         connectionChannelIds[msg_.channel.connectionHops[0]].push(channelId);
-        return channelId;
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: msg_.channel.connectionHops[0],
+            channelId: channelId,
+            counterpartyPortId: msg_.channel.counterparty.portId,
+            counterpartyChannelId: msg_.channel.counterparty.channelId
+        });
     }
 
     /**
      * @dev channelOpenAck is called by the handshake-originating module to acknowledge the acceptance of the initial request by the counterparty module on the other chain.
      */
-    function channelOpenAck(IBCMsgs.MsgChannelOpenAck calldata msg_) external {
+    function channelOpenAck(IBCMsgs.MsgChannelOpenAck calldata msg_) external override returns (Channel.Attributes memory) {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
         require(
             channel.state == Channel.State.Init || channel.state == Channel.State.TryOpen,
@@ -135,12 +147,19 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         channel.version = msg_.counterpartyVersion;
         channel.counterparty.channelId = msg_.counterpartyChannelId;
         updateChannelCommitment(msg_.portId, msg_.channelId);
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: channel.connectionHops[0],
+            channelId: msg_.channelId,
+            counterpartyPortId: channel.counterparty.portId,
+            counterpartyChannelId: channel.counterparty.channelId
+        });
     }
 
     /**
      * @dev channelOpenConfirm is called by the counterparty module to close their end of the channel, since the other end has been closed.
      */
-    function channelOpenConfirm(IBCMsgs.MsgChannelOpenConfirm calldata msg_) external {
+    function channelOpenConfirm(IBCMsgs.MsgChannelOpenConfirm calldata msg_) external override returns (Channel.Attributes memory) {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
         require(channel.state == Channel.State.TryOpen, "channel state is not TRYOPEN");
 
@@ -172,12 +191,19 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         );
         channel.state = Channel.State.Open;
         updateChannelCommitment(msg_.portId, msg_.channelId);
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: channel.connectionHops[0],
+            channelId: msg_.channelId,
+            counterpartyPortId: channel.counterparty.portId,
+            counterpartyChannelId: channel.counterparty.channelId
+        });
     }
 
     /**
      * @dev channelCloseInit is called by either module to close their end of the channel. Once closed, channels cannot be reopened.
      */
-    function channelCloseInit(IBCMsgs.MsgChannelCloseInit calldata msg_) external {
+    function channelCloseInit(IBCMsgs.MsgChannelCloseInit calldata msg_) external override returns (Channel.Attributes memory) {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
         require(channel.state != Channel.State.Closed, "channel state is already CLOSED");
 
@@ -188,13 +214,20 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
 
         channel.state = Channel.State.Closed;
         updateChannelCommitment(msg_.portId, msg_.channelId);
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: channel.connectionHops[0],
+            channelId: msg_.channelId,
+            counterpartyPortId: channel.counterparty.portId,
+            counterpartyChannelId: channel.counterparty.channelId
+        });
     }
 
     /**
      * @dev channelCloseConfirm is called by the counterparty module to close their end of the
      * channel, since the other end has been closed.
      */
-    function channelCloseConfirm(IBCMsgs.MsgChannelCloseConfirm calldata msg_) external {
+    function channelCloseConfirm(IBCMsgs.MsgChannelCloseConfirm calldata msg_) external override returns (Channel.Attributes memory) {
         Channel.Data storage channel = channels[msg_.portId][msg_.channelId];
         require(channel.state != Channel.State.Closed, "channel state is already CLOSED");
 
@@ -226,6 +259,13 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
         );
         channel.state = Channel.State.Closed;
         updateChannelCommitment(msg_.portId, msg_.channelId);
+        return Channel.Attributes({
+            portId: msg_.portId,
+            connectionId: channel.connectionHops[0],
+            channelId: msg_.channelId,
+            counterpartyPortId: channel.counterparty.portId,
+            counterpartyChannelId: channel.counterparty.channelId
+        });
     }
 
     function updateChannelCommitment(string memory portId, string memory channelId) private {
