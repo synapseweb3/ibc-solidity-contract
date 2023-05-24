@@ -7,6 +7,7 @@ import "./IBCConnectionHandler.sol";
 import "./IBCChannelHandler.sol";
 import "./IBCPacketHandler.sol";
 import "./IBCQuerier.sol";
+import "./CellEmitterHandler.sol";
 
 /**
  * @dev IBCHandler is a contract that implements [ICS-25](https://github.com/cosmos/ibc/tree/main/spec/core/ics-025-handler-interface).
@@ -17,7 +18,8 @@ abstract contract IBCHandler is
     IBCConnectionHandler,
     IBCChannelHandler,
     IBCPacketHandler,
-    IBCQuerier
+    IBCQuerier,
+    CellEmitterHandler
 {
     /**
      * @dev The arguments of constructor must satisfy the followings:
