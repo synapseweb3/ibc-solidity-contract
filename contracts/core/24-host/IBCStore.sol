@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "../../proto/Client.sol";
 import "../../proto/Connection.sol";
 import "../../proto/Channel.sol";
+import "../../proto/CellEmitter.sol";
 import "../02-client/ILightClient.sol";
 
 abstract contract IBCStore {
@@ -40,6 +41,7 @@ abstract contract IBCStore {
     uint64 public nextConnectionSequence;
     uint64 public nextChannelSequence;
 
+    CellEmitter.Filter[] emitterFilters;
     // Storage accessors
 
     function getClient(string memory clientId) internal view returns (ILightClient) {
