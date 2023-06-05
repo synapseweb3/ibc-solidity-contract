@@ -44,6 +44,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             msg_.channel.version
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
+        claimCapability(channelCapabilityPath(msg_.portId, channelId), msg.sender);
         emit OpenInitChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);
         return attr;
     }
@@ -69,6 +70,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             msg_.counterpartyVersion
         );
         claimCapability(channelCapabilityPath(msg_.portId, channelId), address(module));
+        claimCapability(channelCapabilityPath(msg_.portId, channelId), msg.sender);
         emit OpenTryChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);
         return attr;
     }
