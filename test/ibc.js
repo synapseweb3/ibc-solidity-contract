@@ -2,8 +2,6 @@
 
 const IBCPacket = artifacts.require("IBCPacket");
 const IBCHandler = artifacts.require("IBCTestHandler");
-
-const ChannelType = artifacts.require("./proto/Channel.sol");
 const MockModule = artifacts.require("MockModule");
 
 contract("IBC", (accounts) => {
@@ -189,7 +187,7 @@ contract("IBC", (accounts) => {
     await ibcHandler.channelOpenConfirm(msgChannelOpenConfirm);
     console.log("pass channel open confirm");
 
-
+    // ---------- Packet ---------- //
     // Send Packet
     const msgSendPacket = {
       sequence: 1,
