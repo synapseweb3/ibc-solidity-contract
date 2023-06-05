@@ -157,7 +157,7 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
         );
         // TODO we should also verify a consensus state
 
-        connection.state = ConnectionEnd.State.Open;
+        connection.state = ConnectionEnd.State.TryOpen;
         copyVersions(expectedConnection.versions, connection.versions);
         connection.counterparty.connectionId = msg_.counterpartyConnectionId;
         updateConnectionCommitment(msg_.connectionId);

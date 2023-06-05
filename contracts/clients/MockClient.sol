@@ -26,13 +26,8 @@ contract MockClient is ILightClient {
     bytes32 private constant CLIENT_STATE_TYPE_URL_HASH = keccak256(abi.encodePacked(CLIENT_STATE_TYPE_URL));
     bytes32 private constant CONSENSUS_STATE_TYPE_URL_HASH = keccak256(abi.encodePacked(CONSENSUS_STATE_TYPE_URL));
 
-    address internal ibcHandler;
     mapping(string => ClientState.Data) internal clientStates;
     mapping(string => mapping(uint128 => ConsensusState.Data)) internal consensusStates;
-
-    constructor(address ibcHandler_) {
-        ibcHandler = ibcHandler_;
-    }
 
     /**
      * @dev createClient creates a new client with the given state
@@ -40,33 +35,13 @@ contract MockClient is ILightClient {
     function createClient(string calldata clientId, bytes calldata clientStateBytes, bytes calldata consensusStateBytes)
         external
         override
-        onlyIBC
         returns (bytes32 clientStateCommitment, ConsensusStateUpdate memory update, bool ok)
     {
-        ClientState.Data memory clientState;
-        ConsensusState.Data memory consensusState;
-
-        (clientState, ok) = unmarshalClientState(clientStateBytes);
-        if (!ok) {
-            return (clientStateCommitment, update, false);
-        }
-        (consensusState, ok) = unmarshalConsensusState(consensusStateBytes);
-        if (!ok) {
-            return (clientStateCommitment, update, false);
-        }
-        if (
-            clientState.latestHeight.revisionNumber != 0 || clientState.latestHeight.revisionHeight == 0
-                || consensusState.timestamp == 0
-        ) {
-            return (clientStateCommitment, update, false);
-        }
-        clientStates[clientId] = clientState;
-        consensusStates[clientId][clientState.latestHeight.toUint128()] = consensusState;
         return (
             keccak256(clientStateBytes),
             ConsensusStateUpdate({
-                consensusStateCommitment: keccak256(consensusStateBytes),
-                height: clientState.latestHeight
+                consensusStateCommitment: bytes32(0),
+                height: Height.Data({revisionNumber: 0, revisionHeight: 0})
             }),
             true
         );
@@ -81,16 +56,14 @@ contract MockClient is ILightClient {
         override
         returns (uint64, bool)
     {
-        ConsensusState.Data storage consensusState = consensusStates[clientId][height.toUint128()];
-        return (consensusState.timestamp, consensusState.timestamp != 0);
+        return (9223372036854775807, true);
     }
 
     /**
      * @dev getLatestHeight returns the latest height of the client state corresponding to `clientId`.
      */
     function getLatestHeight(string calldata clientId) external view override returns (Height.Data memory, bool) {
-        ClientState.Data storage clientState = clientStates[clientId];
-        return (clientState.latestHeight, clientState.latestHeight.revisionHeight != 0);
+        return (Height.Data({revisionNumber: 0, revisionHeight: 9999}), true);
     }
 
     /**
@@ -104,31 +77,13 @@ contract MockClient is ILightClient {
     function updateClient(string calldata clientId, bytes calldata clientMessageBytes)
         external
         override
-        onlyIBC
         returns (bytes32 clientStateCommitment, ConsensusStateUpdate[] memory updates, bool ok)
     {
-        Height.Data memory height;
-        uint64 timestamp;
-        Any.Data memory anyClientState;
-        Any.Data memory anyConsensusState;
-
-        (height, timestamp) = parseHeader(clientMessageBytes);
-        if (height.gt(clientStates[clientId].latestHeight)) {
-            clientStates[clientId].latestHeight = height;
-        }
-        anyClientState.typeUrl = CLIENT_STATE_TYPE_URL;
-        anyClientState.value = ClientState.encode(clientStates[clientId]);
-
-        ConsensusState.Data storage consensusState = consensusStates[clientId][height.toUint128()];
-        consensusState.timestamp = timestamp;
-
-        anyConsensusState.typeUrl = CONSENSUS_STATE_TYPE_URL;
-        anyConsensusState.value = ConsensusState.encode(consensusState);
-
-        updates = new ConsensusStateUpdate[](1);
-        updates[0] =
-            ConsensusStateUpdate({consensusStateCommitment: keccak256(Any.encode(anyConsensusState)), height: height});
-        return (keccak256(Any.encode(anyClientState)), updates, true);
+        return (
+            bytes32(0),
+            new ConsensusStateUpdate[](0),
+            true
+        );
     }
 
     /**
@@ -145,8 +100,7 @@ contract MockClient is ILightClient {
         bytes memory,
         bytes calldata value
     ) external view override returns (bool) {
-        require(consensusStates[clientId][height.toUint128()].timestamp != 0, "consensus state not found");
-        return sha256(value) == proof.toBytes32(0);
+        return true;
     }
 
     /**
@@ -162,8 +116,7 @@ contract MockClient is ILightClient {
         bytes memory,
         bytes memory
     ) external view override returns (bool) {
-        require(consensusStates[clientId][height.toUint128()].timestamp != 0, "consensus state not found");
-        return proof.length == 0;
+        return true;
     }
 
     /* State accessors */
@@ -173,11 +126,7 @@ contract MockClient is ILightClient {
      *      If it's not found, the function returns false.
      */
     function getClientState(string calldata clientId) external view returns (bytes memory clientStateBytes, bool) {
-        ClientState.Data storage clientState = clientStates[clientId];
-        if (clientState.latestHeight.revisionHeight == 0) {
-            return (clientStateBytes, false);
-        }
-        return (Any.encode(Any.Data({typeUrl: CLIENT_STATE_TYPE_URL, value: ClientState.encode(clientState)})), true);
+        return (bytes("1"), true);
     }
 
     /**
@@ -189,14 +138,7 @@ contract MockClient is ILightClient {
         view
         returns (bytes memory consensusStateBytes, bool)
     {
-        ConsensusState.Data storage consensusState = consensusStates[clientId][height.toUint128()];
-        if (consensusState.timestamp == 0) {
-            return (consensusStateBytes, false);
-        }
-        return (
-            Any.encode(Any.Data({typeUrl: CONSENSUS_STATE_TYPE_URL, value: ConsensusState.encode(consensusState)})),
-            true
-        );
+        return (bytes("1"), true);
     }
 
     /* Internal functions */
@@ -236,8 +178,4 @@ contract MockClient is ILightClient {
         return (ConsensusState.decode(anyConsensusState.value), true);
     }
 
-    modifier onlyIBC() {
-        require(msg.sender == ibcHandler);
-        _;
-    }
 }
