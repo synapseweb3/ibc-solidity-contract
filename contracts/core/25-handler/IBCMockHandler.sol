@@ -11,7 +11,7 @@ import "../02-client/ILightClient.sol";
 /**
  * @dev IBCHandler is a contract that implements [ICS-25](https://github.com/cosmos/ibc/tree/main/spec/core/ics-025-handler-interface).
  */
-contract IBCTestHandler is
+contract IBCMockHandler is
     IBCHost,
     IBCClientHandler,
     IBCConnectionHandler,

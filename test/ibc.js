@@ -1,7 +1,7 @@
 // import "../../proto/Channel.sol";
 
 const IBCPacket = artifacts.require("IBCPacket");
-const IBCHandler = artifacts.require("IBCTestHandler");
+const IBCHandler = artifacts.require("IBCMockHandler");
 const MockModule = artifacts.require("MockModule");
 
 contract("IBC", (accounts) => {
