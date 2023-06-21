@@ -40,10 +40,10 @@ module.exports = async function (deployer, network) {
     console.log("Done deploying contracts");
   } else {
     // production
-    const clientAddress = await deployContract("IBCPacket");
+    const packetAddress = await deployContract("IBCPacket");
     const connectionAddress = await deployContract("IBCConnection");
     const channelAddress = await deployContract("IBCChannelHandshake");
-    const packetAddress = await deployContract("IBCClient");
+    const clientAddress = await deployContract("IBCClient");
     await deployContract(
       "OwnableIBCHandler",
       clientAddress,
