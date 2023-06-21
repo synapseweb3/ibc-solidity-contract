@@ -44,13 +44,35 @@ module.exports = async function (deployer, network) {
     const connectionAddress = await deployContract("IBCConnection");
     const channelAddress = await deployContract("IBCChannelHandshake");
     const clientAddress = await deployContract("IBCClient");
-    await deployContract(
+    const ibcAddress = await deployContract(
       "OwnableIBCHandler",
       clientAddress,
       connectionAddress,
       channelAddress,
       packetAddress
     );
+    const mockClient = await deployContract("MockClient");
+    sleep(2000);
+    const ibcHandler = await IBCHandler.at(ibcAddress);
+
+    // Register Client
+    const clientType = "AxonClient";
+    await ibcHandler.registerClient(clientType, mockClient);
+    console.log("Register Axon Client");
+    sleep(2000);
+
+    // Create Client
+    const msgCreateClient = {
+      clientType: clientType,
+      consensusState: 1234,
+      clientState: 1234,
+    };
+    const clientAId = await ibcHandler.createClient.call(msgCreateClient);
+    await ibcHandler.createClient(msgCreateClient);
+    console.log("ClientA ID: " + clientAId);
+    const clientBId = await ibcHandler.createClient.call(msgCreateClient);
+    await ibcHandler.createClient(msgCreateClient);
+    console.log("ClientB ID: " + clientBId);
   }
 };
 
@@ -64,4 +86,11 @@ async function deployContract(contractName, ...args) {
   // console.log(contractInstance);
   console.log("Done Deployment " + contractName + " at " + contractInstance.address);
   return contractInstance.address;
+}
+
+
+function sleep(ms) {
+  var start = new Date().getTime(), expire = start + ms;
+  while (new Date().getTime() < expire) { }
+  return;
 }
