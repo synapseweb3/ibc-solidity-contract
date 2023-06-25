@@ -41,7 +41,7 @@ contract MockClient is ILightClient {
             keccak256(clientStateBytes),
             ConsensusStateUpdate({
                 consensusStateCommitment: bytes32(0),
-                height: Height.Data({revisionNumber: 0, revisionHeight: 0})
+                height: Height.Data({revisionNumber: 0, revisionHeight: 9999})
             }),
             true
         );
@@ -126,7 +126,8 @@ contract MockClient is ILightClient {
      *      If it's not found, the function returns false.
      */
     function getClientState(string calldata clientId) external view returns (bytes memory clientStateBytes, bool) {
-        return (bytes("1"), true);
+        string memory clientState = string.concat("client-state-", clientId);
+        return (bytes(clientState), true);
     }
 
     /**
@@ -138,7 +139,8 @@ contract MockClient is ILightClient {
         view
         returns (bytes memory consensusStateBytes, bool)
     {
-        return (bytes("1"), true);
+        string memory consensusState = string.concat("consensus-state-", clientId);
+        return (bytes(consensusState), true);
     }
 
     /* Internal functions */
