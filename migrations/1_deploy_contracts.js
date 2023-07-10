@@ -11,7 +11,7 @@ const ethers = require("ethers");
 const mnemonic = "test test test test test test test test test test test junk";
 
 module.exports = async function (deployer, network) {
-  if (network == "deployment") {
+  if (network == "development") {
     console.log("Deploy contracts for network " + network);
     const IBCMockHandler = artifacts.require("IBCMockHandler");
     const MockClient = artifacts.require("MockClient");
@@ -70,13 +70,9 @@ module.exports = async function (deployer, network) {
     await ibcHandler.createClient(msgCreateClient);
     console.log("Create Client ID: " + clientId);
 
-    // Register Module
+    // Register Module (optional, just for the cooperation of test on Axon endpoint)
     await ibcHandler.bindPort("mock-port-0", mockModuleAddress);
     console.log("Register Mock Module: mock-port-0");
-
-    // const clientBId = await ibcHandler.createClient.call(msgCreateClient);
-    // await ibcHandler.createClient(msgCreateClient);
-    // console.log("ClientB ID: " + clientBId);
   }
 };
 
