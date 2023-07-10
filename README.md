@@ -10,7 +10,9 @@ ibc-solidity-contract is the EVM-compatible IBC implementation for chain based o
 Create `.env` in project root and put axon url like
 
 ```
-AXON_RPC_URL=localhost:8000
+AXON_RPC_URL=http://<Ip>:<Port>
 ```
 
-Run `npx truffle migrate --network axon`
+## Deploy IBC-Solidity Handler on Axon
+Run `npx truffle migrate --network axon` to deploy one IBC handler which have registered one [MockClient](https://github.com/synapseweb3/ibc-solidity-contract/blob/master/contracts/clients/MockClient.sol) under id `AxonClient-0` and bind one [MockModule](https://github.com/synapseweb3/ibc-solidity-contract/blob/master/contracts/apps/20-transfer/MockModule.sol) under port `mock-port-0`
+
