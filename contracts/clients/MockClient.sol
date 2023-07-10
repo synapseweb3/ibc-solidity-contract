@@ -62,7 +62,7 @@ contract MockClient is ILightClient {
     /**
      * @dev getLatestHeight returns the latest height of the client state corresponding to `clientId`.
      */
-    function getLatestHeight(string calldata clientId) external view override returns (Height.Data memory, bool) {
+    function getLatestHeight(string calldata clientId) external pure override returns (Height.Data memory, bool) {
         return (Height.Data({revisionNumber: 0, revisionHeight: 9999}), true);
     }
 
@@ -125,8 +125,8 @@ contract MockClient is ILightClient {
      * @dev getClientState returns the clientState corresponding to `clientId`.
      *      If it's not found, the function returns false.
      */
-    function getClientState(string calldata clientId) external view returns (bytes memory clientStateBytes, bool) {
-        string memory clientState = string.concat("client-state-", clientId);
+    function getClientState(string calldata clientId) pure external returns (bytes memory clientStateBytes, bool) {
+        string memory clientState = string.concat("client_state-", clientId);
         return (bytes(clientState), true);
     }
 
@@ -136,10 +136,10 @@ contract MockClient is ILightClient {
      */
     function getConsensusState(string calldata clientId, Height.Data calldata height)
         external
-        view
+        pure
         returns (bytes memory consensusStateBytes, bool)
     {
-        string memory consensusState = string.concat("consensus-state-", clientId);
+        string memory consensusState = string.concat("consensus_state-", clientId);
         return (bytes(consensusState), true);
     }
 

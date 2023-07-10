@@ -11,7 +11,7 @@ const ethers = require("ethers");
 const mnemonic = "test test test test test test test test test test test junk";
 
 module.exports = async function (deployer, network) {
-  if (network == "development") {
+  if (network == "deployment") {
     console.log("Deploy contracts for network " + network);
     const IBCMockHandler = artifacts.require("IBCMockHandler");
     const MockClient = artifacts.require("MockClient");
@@ -44,6 +44,7 @@ module.exports = async function (deployer, network) {
     const connectionAddress = await deployContract("IBCConnection");
     const channelAddress = await deployContract("IBCChannelHandshake");
     const clientAddress = await deployContract("IBCClient");
+    const mockModuleAddress = await deployContract("MockModule");
     const ibcAddress = await deployContract(
       "OwnableIBCHandler",
       clientAddress,
@@ -52,14 +53,12 @@ module.exports = async function (deployer, network) {
       packetAddress
     );
     const mockClient = await deployContract("MockClient");
-    sleep(2000);
     const ibcHandler = await IBCHandler.at(ibcAddress);
 
     // Register Client
     const clientType = "AxonClient";
     await ibcHandler.registerClient(clientType, mockClient);
-    console.log("Register Axon Client");
-    sleep(2000);
+    console.log("Register Axon Client: AxonClient");
 
     // Create Client
     const msgCreateClient = {
@@ -67,12 +66,17 @@ module.exports = async function (deployer, network) {
       consensusState: 1234,
       clientState: 1234,
     };
-    const clientAId = await ibcHandler.createClient.call(msgCreateClient);
+    const clientId = await ibcHandler.createClient.call(msgCreateClient);
     await ibcHandler.createClient(msgCreateClient);
-    console.log("ClientA ID: " + clientAId);
-    const clientBId = await ibcHandler.createClient.call(msgCreateClient);
-    await ibcHandler.createClient(msgCreateClient);
-    console.log("ClientB ID: " + clientBId);
+    console.log("Create Client ID: " + clientId);
+
+    // Register Module
+    await ibcHandler.bindPort("mock-port-0", mockModuleAddress);
+    console.log("Register Mock Module: mock-port-0");
+
+    // const clientBId = await ibcHandler.createClient.call(msgCreateClient);
+    // await ibcHandler.createClient(msgCreateClient);
+    // console.log("ClientB ID: " + clientBId);
   }
 };
 
@@ -83,14 +87,6 @@ async function deployContract(contractName, ...args) {
   const abi = new ethers.utils.Interface(contract.abi);
   const factory = new ethers.ContractFactory(abi, contract.bytecode, signer);
   const contractInstance = await factory.deploy(...args);
-  // console.log(contractInstance);
   console.log("Done Deployment " + contractName + " at " + contractInstance.address);
   return contractInstance.address;
-}
-
-
-function sleep(ms) {
-  var start = new Date().getTime(), expire = start + ms;
-  while (new Date().getTime() < expire) { }
-  return;
 }

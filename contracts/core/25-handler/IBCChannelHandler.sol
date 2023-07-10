@@ -7,6 +7,7 @@ import "../04-channel/IIBCChannel.sol";
 import "../05-port/IIBCModule.sol";
 import "../05-port/ModuleManager.sol";
 import "../../proto/Connection.sol";
+import "./IBCUtil.sol";
 
 /**
  * @dev IBCChannelHandler is a contract that calls a contract that implements `IIBCChannelHandshake` with delegatecall.
@@ -29,7 +30,7 @@ abstract contract IBCChannelHandler is ModuleManager {
     function channelOpenInit(IBCMsgs.MsgChannelOpenInit calldata msg_) external returns (Channel.Attributes memory attr) {
         (bool success, bytes memory res) =
             ibcChannelAddress.delegatecall(abi.encodeWithSelector(IIBCChannelHandshake.channelOpenInit.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "channelOpenInit");
 
         attr = abi.decode(res, (Channel.Attributes));
         string memory channelId = attr.channelId;
@@ -55,7 +56,7 @@ abstract contract IBCChannelHandler is ModuleManager {
             (bool success, bytes memory res) = ibcChannelAddress.delegatecall(
                 abi.encodeWithSelector(IIBCChannelHandshake.channelOpenTry.selector, msg_)
             );
-            require(success);
+            IBCUtil.process_delgatecall(success, res, "channelOpenTry");
             attr = abi.decode(res, (Channel.Attributes));
         }
         string memory channelId = attr.channelId;
@@ -78,7 +79,7 @@ abstract contract IBCChannelHandler is ModuleManager {
     function channelOpenAck(IBCMsgs.MsgChannelOpenAck calldata msg_) external returns (Channel.Attributes memory attr) {
         (bool success, bytes memory res) =
             ibcChannelAddress.delegatecall(abi.encodeWithSelector(IIBCChannelHandshake.channelOpenAck.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "channelOpenAck");
         attr = abi.decode(res, (Channel.Attributes));
         lookupModuleByPort(msg_.portId).onChanOpenAck(msg_.portId, msg_.channelId, msg_.counterpartyVersion);
         emit OpenAckChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);
@@ -89,7 +90,7 @@ abstract contract IBCChannelHandler is ModuleManager {
         (bool success, bytes memory res) = ibcChannelAddress.delegatecall(
             abi.encodeWithSelector(IIBCChannelHandshake.channelOpenConfirm.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "channelOpenConfirm");
         attr = abi.decode(res, (Channel.Attributes));
         lookupModuleByPort(msg_.portId).onChanOpenConfirm(msg_.portId, msg_.channelId);
         emit OpenConfirmChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);
@@ -99,7 +100,7 @@ abstract contract IBCChannelHandler is ModuleManager {
     function channelCloseInit(IBCMsgs.MsgChannelCloseInit calldata msg_) external returns (Channel.Attributes memory attr) {
         (bool success, bytes memory res) =
             ibcChannelAddress.delegatecall(abi.encodeWithSelector(IIBCChannelHandshake.channelCloseInit.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "channelCloseInit");
         attr = abi.decode(res, (Channel.Attributes));
         lookupModuleByPort(msg_.portId).onChanCloseInit(msg_.portId, msg_.channelId);
         emit CloseInitChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);
@@ -110,7 +111,7 @@ abstract contract IBCChannelHandler is ModuleManager {
         (bool success, bytes memory res) = ibcChannelAddress.delegatecall(
             abi.encodeWithSelector(IIBCChannelHandshake.channelCloseConfirm.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "channelCloseConfirm");
         attr = abi.decode(res, (Channel.Attributes));
         lookupModuleByPort(msg_.portId).onChanCloseConfirm(msg_.portId, msg_.channelId);
         emit CloseConfirmChannel(attr.portId, attr.channelId, attr.connectionId, attr.counterpartyPortId, attr.counterpartyChannelId);

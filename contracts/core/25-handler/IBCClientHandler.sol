@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "../24-host/IBCHost.sol";
 import "../02-client/IIBCClient.sol";
+import "./IBCUtil.sol";
 
 /**
  * @dev IBCClientHandler is a contract that calls a contract that implements `IIBCClient` with delegatecall.
@@ -25,7 +26,7 @@ abstract contract IBCClientHandler {
         (bool success,) = ibcClientAddress.delegatecall(
             abi.encodeWithSelector(IIBCClient.registerClient.selector, clientType, client)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "registerClient");
     }
 
     /**
@@ -34,7 +35,7 @@ abstract contract IBCClientHandler {
     function createClient(IBCMsgs.MsgCreateClient calldata msg_) external returns (string memory clientId) {
         (bool success, bytes memory res) =
             ibcClientAddress.delegatecall(abi.encodeWithSelector(IIBCClient.createClient.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "createClient");
         clientId = abi.decode(res, (string));
         emit CreateClient(clientId, msg_.clientType);
         return clientId;
@@ -45,7 +46,7 @@ abstract contract IBCClientHandler {
      */
     function updateClient(IBCMsgs.MsgUpdateClient calldata msg_) external {
         (bool success,) = ibcClientAddress.delegatecall(abi.encodeWithSelector(IIBCClient.updateClient.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "updateClient");
         emit UpdateClient(msg_.clientId, msg_.clientMessage);
     }
 }

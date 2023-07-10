@@ -7,6 +7,7 @@ import "../24-host/IBCHost.sol";
 import "../04-channel/IIBCChannel.sol";
 import "../05-port/ModuleManager.sol";
 import "../05-port/IIBCModule.sol";
+import "./IBCUtil.sol";
 
 /**
  * @dev IBCPacketHandler is a contract that calls a contract that implements `IIBCPacket` with delegatecall.
@@ -31,7 +32,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         require(authenticateCapability(channelCapabilityPath(packet.sourcePort, packet.sourceChannel)));
         (bool success,) =
             ibcChannelPacketAddress.delegatecall(abi.encodeWithSelector(IIBCPacket.sendPacket.selector, packet));
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "sendPacket");
         emit SendPacket(packet);
     }
 
@@ -40,7 +41,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         bytes memory acknowledgement = module.onRecvPacket(msg_.packet, _msgSender());
         (bool success,) =
             ibcChannelPacketAddress.delegatecall(abi.encodeWithSelector(IIBCPacket.recvPacket.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "recvPacket");
         if (acknowledgement.length > 0) {
             (success,) = ibcChannelPacketAddress.delegatecall(
                 abi.encodeWithSelector(
@@ -75,7 +76,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
                 acknowledgement
             )
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "writeAcknowledgement");
         emit WriteAcknowledgement(destinationPortId, destinationChannel, sequence, acknowledgement);
     }
 
@@ -84,7 +85,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         module.onAcknowledgementPacket(msg_.packet, msg_.acknowledgement, _msgSender());
         (bool success,) =
             ibcChannelPacketAddress.delegatecall(abi.encodeWithSelector(IIBCPacket.acknowledgePacket.selector, msg_));
-        require(success);
+        IBCUtil.process_delgatecall(success, "", "acknowledgePacket");
         emit AcknowledgePacket(msg_.packet, msg_.acknowledgement);
     }
 }

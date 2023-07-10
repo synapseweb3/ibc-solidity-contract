@@ -21,7 +21,7 @@ abstract contract ModuleManager {
      */
     function lookupModuleByPort(string memory portId) internal view virtual returns (IIBCModule) {
         (address[] storage modules, bool found) = lookupModules(portCapabilityPath(portId));
-        require(found);
+        require(found, string.concat("no module find under port ", portId));
         return IIBCModule(modules[0]);
     }
 
@@ -35,7 +35,7 @@ abstract contract ModuleManager {
         returns (IIBCModule)
     {
         (address[] storage modules, bool found) = lookupModules(channelCapabilityPath(portId, channelId));
-        require(found);
+        require(found, string.concat("no module find under channel ", channelId, " and port ", portId));
         return IIBCModule(modules[0]);
     }
 

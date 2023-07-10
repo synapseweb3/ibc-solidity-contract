@@ -61,7 +61,6 @@ contract IBCChannelHandshake is IBCStore, IIBCChannelHandshake {
             connection.versions.length == 1, "single version must be negotiated on connection before opening channel"
         );
         require(msg_.channel.state == Channel.State.TryOpen, "channel state must be TryOpen");
-        require(msg_.channel.connectionHops.length == 1);
 
         // TODO verifySupportedFeature
 

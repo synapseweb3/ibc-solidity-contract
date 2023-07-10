@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "../25-handler/IBCMsgs.sol";
 import "../24-host/IBCHost.sol";
 import "../03-connection/IIBCConnection.sol";
+import "./IBCUtil.sol";
 
 /**
  * @dev IBCConnectionHandler is a contract that calls a contract that implements `IIBCConnectionHandshake` with delegatecall.
@@ -28,7 +29,7 @@ abstract contract IBCConnectionHandler {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenInit.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "connectionOpenInit");
         attr = abi.decode(res, (ConnectionEnd.Attributes));
         emit OpenInitConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
         return attr;
@@ -41,7 +42,7 @@ abstract contract IBCConnectionHandler {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenTry.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "connectionOpenTry");
         attr = abi.decode(res, (ConnectionEnd.Attributes));
         emit OpenTryConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
         return attr;
@@ -54,7 +55,7 @@ abstract contract IBCConnectionHandler {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenAck.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "connectionOpenAck");
         attr = abi.decode(res, (ConnectionEnd.Attributes));
         emit OpenAckConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
         return attr;
@@ -67,7 +68,7 @@ abstract contract IBCConnectionHandler {
         (bool success, bytes memory res) = ibcConnectionAddress.delegatecall(
             abi.encodeWithSelector(IIBCConnectionHandshake.connectionOpenConfirm.selector, msg_)
         );
-        require(success);
+        IBCUtil.process_delgatecall(success, res, "connectionOpenConfirm");
         attr = abi.decode(res, (ConnectionEnd.Attributes));
         emit OpenConfirmConnection(attr.connectionId, attr.clientId, attr.counterpartyConnectionId, attr.counterpartyClientId);
         return attr;
