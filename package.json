@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "compile": "truffle compile",
+    "migrate": "HTTPS_PROXY= HTTP_PROXY= truffle migrate --network axon"
+  },
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.1.4",

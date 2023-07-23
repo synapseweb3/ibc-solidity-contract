@@ -56,19 +56,23 @@ module.exports = async function (deployer, network) {
     const ibcHandler = await IBCHandler.at(ibcAddress);
 
     // Register Client
-    const clientType = "AxonClient";
-    await ibcHandler.registerClient(clientType, mockClient);
-    console.log("Register Axon Client: AxonClient");
+    const axonClientType = "07-axon";
+    await ibcHandler.registerClient(axonClientType, mockClient);
+    console.log("Register Axon client type: " + axonClientType);
+
+    const ckbClientType = "07-ckb4ibc";
+    await ibcHandler.registerClient(ckbClientType, mockClient);
+    console.log("Register Ckb client type: " + ckbClientType);
 
     // Create Client
-    const msgCreateClient = {
-      clientType: clientType,
-      consensusState: 1234,
-      clientState: 1234,
-    };
-    const clientId = await ibcHandler.createClient.call(msgCreateClient);
-    await ibcHandler.createClient(msgCreateClient);
-    console.log("Create Client ID: " + clientId);
+    // const msgCreateClient = {
+    //   clientType: clientType,
+    //   consensusState: 1234,
+    //   clientState: 1234,
+    // };
+    // const clientId = await ibcHandler.createClient.call(msgCreateClient);
+    // await ibcHandler.createClient(msgCreateClient);
+    // console.log("Create Client ID: " + clientId);
 
     // Register Module (optional, just for the cooperation of test on Axon endpoint)
     await ibcHandler.bindPort("mock-port-0", mockModuleAddress);
