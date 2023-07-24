@@ -125,23 +125,29 @@ abstract contract IBCQuerier is IBCStore {
     function getConnectionChannels(
         string calldata connectionId
     ) external view returns (IdentifiedChannel.Data[] memory) {
-        string[] memory channelIds_ = connectionChannelIds[connectionId];
+        string[] memory portIds = connectionPortIds[connectionId];
         IdentifiedChannel.Data[]
             memory identifiedChannels = new IdentifiedChannel.Data[](
-                channelIds_.length
+                portIds.length
             );
-        for (uint i = 0; i < channelIds_.length; i++) {
-            string memory channelId = channelIds_[i];
-            Channel.Data memory channel = channels[connectionId][channelId];
-            identifiedChannels[i] = IdentifiedChannel.Data({
-                state: channel.state,
-                ordering: channel.ordering,
-                counterparty: channel.counterparty,
-                connectionHops: channel.connectionHops,
-                version: channel.version,
-                portId: connectionId,
-                channelId: channelId
-            });
+        uint64 sequence = 0;
+        for (uint i = 0; i < portIds.length; i++) {
+            string memory portId = portIds[i];
+            string[] memory channelIds = portChannelIds[portId];
+            for (uint j = 0; j < channelIds.length; j++) {
+                string memory channelId = channelIds[j];
+                Channel.Data memory channel = channels[portId][channelId];
+                identifiedChannels[sequence] = IdentifiedChannel.Data({
+                    state: channel.state,
+                    ordering: channel.ordering,
+                    counterparty: channel.counterparty,
+                    connectionHops: channel.connectionHops,
+                    version: channel.version,
+                    portId: portId,
+                    channelId: channelId
+                });
+                sequence++;
+            }
         }
         return identifiedChannels;
     }
@@ -188,26 +194,20 @@ abstract contract IBCQuerier is IBCStore {
         string calldata channelId
     ) external view returns (uint64[] memory) {
         uint64 maxSeq = nextSequenceSends[portId][channelId];
-        uint len = 0;
+        bool[] memory allCommitmentSequences = new bool[](maxSeq);
+        uint valid_count = 0;
         for (uint64 i = 0; i < maxSeq; i++) {
-            bytes32 commitment = commitments[
-                keccak256(
-                    IBCCommitment.packetCommitmentPath(portId, channelId, i)
-                )
-            ];
-            if (commitment == bytes32(0)) {
-                len++;
+            (, bool ok) = this.getHashedPacketCommitment(portId, channelId, i);
+            allCommitmentSequences[i] = ok;
+            if (ok) {
+                valid_count += 1;
             }
         }
-        uint64[] memory commitmentSequences = new uint64[](len);
+        uint64[] memory commitmentSequences = new uint64[](valid_count);
+        uint push_i = 0;
         for (uint64 i = 0; i < maxSeq; i++) {
-            bytes32 commitment = commitments[
-                keccak256(
-                    IBCCommitment.packetCommitmentPath(portId, channelId, i)
-                )
-            ];
-            if (commitment == bytes32(0)) {
-                commitmentSequences[len] = i;
+            if (allCommitmentSequences[i]) {
+                commitmentSequences[push_i++] = i;
             }
         }
         return commitmentSequences;

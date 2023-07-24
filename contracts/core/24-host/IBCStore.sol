@@ -19,7 +19,7 @@ abstract contract IBCStore {
     string[] public portIds;
     string[] public channelIds;
     mapping(string => string[]) public portChannelIds; // portId => channelId[]
-    mapping(string => string[]) public connectionChannelIds; // connectionId => channelId[]
+    mapping(string => string[]) public connectionPortIds; // connectionId => portId[]
 
     mapping(string => address) public clientRegistry; // clientType => clientImpl
     mapping(string => string) public clientTypes; // clientID => clientType
@@ -29,7 +29,8 @@ abstract contract IBCStore {
     mapping(string => mapping(string => uint64)) public nextSequenceSends;
     mapping(string => mapping(string => uint64)) public nextSequenceRecvs;
     mapping(string => mapping(string => uint64)) public nextSequenceAcks;
-    mapping(string => mapping(string => mapping(uint64 => uint8))) public packetReceipts;
+    mapping(string => mapping(string => mapping(uint64 => uint8)))
+        public packetReceipts;
     mapping(bytes => address[]) public capabilities;
 
     mapping(string => Height.Data[]) public consensusHeights; // clientId => heights
@@ -42,9 +43,12 @@ abstract contract IBCStore {
     uint64 public nextChannelSequence;
 
     CellEmitter.Filter[] emitterFilters;
+
     // Storage accessors
 
-    function getClient(string memory clientId) internal view returns (ILightClient) {
+    function getClient(
+        string memory clientId
+    ) internal view returns (ILightClient) {
         address clientImpl = clientImpls[clientId];
         require(clientImpl != address(0));
         return ILightClient(clientImpl);

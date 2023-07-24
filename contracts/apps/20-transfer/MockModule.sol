@@ -1,41 +1,40 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
-import "../../core/05-port/IIBCModule.sol";
+import "./ICS20Transfer.sol";
 
-contract MockModule is IIBCModule {
+contract MockModule is ICS20Transfer {
+    event TransferFrom(address, address, string, uint256);
+    event Mint(address, string, uint256);
+    event Burn(address, string, uint256);
 
-    function onChanOpenInit(
-        Channel.Order,
-        string[] calldata connectionHops,
-        string calldata portId,
-        string calldata channelId,
-        ChannelCounterparty.Data calldata counterparty,
-        string calldata version
-    ) external {}
+    constructor(IBCHandler ibcHandler_) ICS20Transfer(ibcHandler_) {}
 
-    function onChanOpenTry(
-        Channel.Order,
-        string[] calldata connectionHops,
-        string calldata portId,
-        string calldata channelId,
-        ChannelCounterparty.Data calldata counterparty,
-        string calldata version,
-        string calldata counterpartyVersion
-    ) external {}
-
-    function onChanOpenAck(string calldata portId, string calldata channelId, string calldata counterpartyVersion)
-        external {}
-
-    function onChanOpenConfirm(string calldata portId, string calldata channelId) external {}
-
-    function onChanCloseInit(string calldata portId, string calldata channelId) external {}
-
-    function onChanCloseConfirm(string calldata portId, string calldata channelId) external {}
-
-    function onRecvPacket(Packet.Data calldata, address) external returns (bytes memory) {
-        return "";
+    function _transferFrom(
+        address sender,
+        address receiver,
+        string memory denom,
+        uint256 amount
+    ) internal override returns (bool) {
+        emit TransferFrom(sender, receiver, denom, amount);
+        return true;
     }
 
-    function onAcknowledgementPacket(Packet.Data calldata, bytes calldata acknowledgement, address relayer) external {}
+    function _mint(
+        address account,
+        string memory denom,
+        uint256 amount
+    ) internal override returns (bool) {
+        emit Mint(account, denom, amount);
+        return true;
+    }
+
+    function _burn(
+        address account,
+        string memory denom,
+        uint256 amount
+    ) internal override returns (bool) {
+        emit Burn(account, denom, amount);
+        return true;
+    }
 }
