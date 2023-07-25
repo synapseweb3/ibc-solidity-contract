@@ -19,12 +19,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
     // Events
     event SendPacket(Packet.Data packet);
     event ReceivePacket(Packet.Data packet);
-    event WriteAcknowledgement(
-        string destinationPortId,
-        string destinationChannel,
-        uint64 sequence,
-        bytes acknowledgement
-    );
+    event WriteAcknowledgement(Packet.Data packet, bytes acknowledgement);
     event AcknowledgePacket(Packet.Data packet, bytes acknowledgement);
 
     constructor(address ibcChannelPacket) {
@@ -69,22 +64,17 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
                 )
             );
             require(success);
-            emit WriteAcknowledgement(
-                msg_.packet.destinationPort,
-                msg_.packet.destinationChannel,
-                msg_.packet.sequence,
-                acknowledgement
-            );
+            emit WriteAcknowledgement(msg_.packet, acknowledgement);
         }
         emit ReceivePacket(msg_.packet);
     }
 
     function writeAcknowledgement(
-        string calldata destinationPortId,
-        string calldata destinationChannel,
-        uint64 sequence,
+        Packet.Data calldata packet,
         bytes calldata acknowledgement
     ) external {
+        string memory destinationPortId = packet.destinationPort;
+        string memory destinationChannel = packet.destinationChannel;
         require(
             authenticateCapability(
                 channelCapabilityPath(destinationPortId, destinationChannel)
@@ -96,17 +86,12 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
                 IIBCPacket.writeAcknowledgement.selector,
                 destinationPortId,
                 destinationChannel,
-                sequence,
+                packet.sequence,
                 acknowledgement
             )
         );
         IBCUtil.process_delgatecall(success, res, "writeAcknowledgement");
-        emit WriteAcknowledgement(
-            destinationPortId,
-            destinationChannel,
-            sequence,
-            acknowledgement
-        );
+        emit WriteAcknowledgement(packet, acknowledgement);
     }
 
     function acknowledgePacket(

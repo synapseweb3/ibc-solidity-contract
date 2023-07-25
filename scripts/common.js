@@ -2,14 +2,14 @@ const ethers = require("ethers");
 
 const AXON_CLIENTS = {
     "07-axon-0": {
-        handler: "0xD61210E756f7D71Cc4F74abF0747D65Ea9d7525b",
-        mock_module: "0x7aB5cEee0Ff304b053CE1F67d84C33F0ff407a55",
+        handler: "0xf975A646FCa589Be9fc4E0C28ea426A75645fB1f",
+        mock_module: "0xAaC7D4A36DAb95955ef3c641c23F1fA46416CF71",
         channel: "channel-0",
         port: "port-0"
     },
     "07-axon-1": {
-        handler: "0xe4a4B3Bc2787aA913e5b4bbce907e8b213250BDe",
-        mock_module: "0xD962a5F050A5F0a2f8dF82aFc04CF1afFE585082",
+        handler: "0x7E27bCbe2F0eDdA3E0AA12492950a6B8703b00FB",
+        mock_module: "0x9015957A2210BB8B10e27d8BBEEF8d9498f123eF",
         channel: "channel-0",
         port: "port-0"
     },
