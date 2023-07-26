@@ -17,7 +17,7 @@ const AXON_CLIENTS = {
 
 function generate_ibc_handler(address, artifacts) {
     const abi = new ethers.utils.Interface(artifacts.require("OwnableIBCHandler").abi);
-    const provider = new ethers.providers.WebSocketProvider(process.env.AXON_RPC_URL);
+    const provider = new ethers.providers.WebSocketProvider(process.env.AXON_WS_RPC_URL);
     const handler = new ethers.Contract(address, abi, provider);
     return handler;
 }

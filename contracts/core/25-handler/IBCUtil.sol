@@ -8,15 +8,16 @@ library IBCUtil {
         string memory prefix
     ) internal pure {
         if (!success) {
-            if (result.length == 0)
+            if (result.length == 0) {
                 revert(string.concat(prefix, " delegatecall error"));
-            // assembly {
-            //     revert(add(32, result), mload(result))
-            // }
-            assembly {
-                result := add(result, 0x04)
             }
-            revert(abi.decode(result, (string)));
+            assembly {
+                revert(add(32, result), mload(result))
+            }
+            // assembly {
+            //     result := add(result, 0x04)
+            // }
+            // revert(abi.decode(result, (string)));
         }
     }
 }

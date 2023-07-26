@@ -5,7 +5,7 @@ async function send_packet(from_clientId, to_clientId) {
 
     const source = AXON_CLIENTS[from_clientId];
     const target = AXON_CLIENTS[to_clientId];
-    const module = await artifacts.require("MockModule").at(source.mock_module);
+    const module = await artifacts.require("MockTransfer").at(source.mock_module);
 
     // build and send packet
     const denom = "AT";

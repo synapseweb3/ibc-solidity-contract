@@ -51,7 +51,7 @@ module.exports = async function (deployer, network) {
       channelAddress,
       packetAddress
     );
-    const mockModuleAddress = await deployContract("MockModule", ibcAddress);
+    const mockTransferAddress = await deployContract("MockTransfer", ibcAddress);
     const mockClient = await deployContract("MockClient");
     const ibcHandler = await IBCHandler.at(ibcAddress);
 
@@ -75,8 +75,8 @@ module.exports = async function (deployer, network) {
     // console.log("Create Client ID: " + clientId);
 
     // Register Module (optional, just for the cooperation of test on Axon endpoint)
-    await ibcHandler.bindPort("port-0", mockModuleAddress);
-    console.log("Register Mock Module: port-0");
+    await ibcHandler.bindPort("port-0", mockTransferAddress);
+    console.log("Register Mock Transfer: port-0");
   }
 };
 
