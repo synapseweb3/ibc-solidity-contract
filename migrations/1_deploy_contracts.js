@@ -51,28 +51,32 @@ module.exports = async function (deployer, network) {
       channelAddress,
       packetAddress
     );
+    const mockTransferAddress = await deployContract("MockTransfer", ibcAddress);
     const mockClient = await deployContract("MockClient");
-    sleep(2000);
     const ibcHandler = await IBCHandler.at(ibcAddress);
 
     // Register Client
-    const clientType = "AxonClient";
-    await ibcHandler.registerClient(clientType, mockClient);
-    console.log("Register Axon Client");
-    sleep(2000);
+    const axonClientType = "07-axon";
+    await ibcHandler.registerClient(axonClientType, mockClient);
+    console.log("Register Axon client type: " + axonClientType);
+
+    const ckbClientType = "07-ckb4ibc";
+    await ibcHandler.registerClient(ckbClientType, mockClient);
+    console.log("Register Ckb client type: " + ckbClientType);
 
     // Create Client
-    const msgCreateClient = {
-      clientType: clientType,
-      consensusState: 1234,
-      clientState: 1234,
-    };
-    const clientAId = await ibcHandler.createClient.call(msgCreateClient);
-    await ibcHandler.createClient(msgCreateClient);
-    console.log("ClientA ID: " + clientAId);
-    const clientBId = await ibcHandler.createClient.call(msgCreateClient);
-    await ibcHandler.createClient(msgCreateClient);
-    console.log("ClientB ID: " + clientBId);
+    // const msgCreateClient = {
+    //   clientType: clientType,
+    //   consensusState: 1234,
+    //   clientState: 1234,
+    // };
+    // const clientId = await ibcHandler.createClient.call(msgCreateClient);
+    // await ibcHandler.createClient(msgCreateClient);
+    // console.log("Create Client ID: " + clientId);
+
+    // Register Module (optional, just for the cooperation of test on Axon endpoint)
+    await ibcHandler.bindPort("port-0", mockTransferAddress);
+    console.log("Register Mock Transfer: port-0");
   }
 };
 
@@ -83,14 +87,6 @@ async function deployContract(contractName, ...args) {
   const abi = new ethers.utils.Interface(contract.abi);
   const factory = new ethers.ContractFactory(abi, contract.bytecode, signer);
   const contractInstance = await factory.deploy(...args);
-  // console.log(contractInstance);
   console.log("Done Deployment " + contractName + " at " + contractInstance.address);
   return contractInstance.address;
-}
-
-
-function sleep(ms) {
-  var start = new Date().getTime(), expire = start + ms;
-  while (new Date().getTime() < expire) { }
-  return;
 }

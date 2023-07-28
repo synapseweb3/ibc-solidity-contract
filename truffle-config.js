@@ -45,15 +45,15 @@ module.exports = {
     // options below to some value.
     //
     development: {
-     host: "127.0.0.1",     // Localhost (default: none)
-     port: 8545,            // Standard Ethereum port (default: none)
-     network_id: "*",       // Any network (default: none)
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 8545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
     },
     axon: {
       network_id: "*",       // Any network (default: none)
       provider: () => new HDWalletProvider({
         mnemonic: "test test test test test test test test test test test junk",
-        providerOrUrl: process.env.AXON_RPC_URL,
+        providerOrUrl: process.env.AXON_HTTP_RPC_URL,
       }),
     },
     //

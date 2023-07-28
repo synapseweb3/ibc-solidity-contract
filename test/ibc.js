@@ -140,7 +140,7 @@ contract("IBC", (accounts) => {
       timeoutTimestamp: 0,
     };
     await ibcHandler.sendPacket(msgSendPacket);
-    console.log("pass send packet");
+
     // Recv Packet
     const msgRecvPacket = {
       packet: {

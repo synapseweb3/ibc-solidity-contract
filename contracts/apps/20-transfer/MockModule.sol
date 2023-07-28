@@ -4,7 +4,6 @@ pragma solidity ^0.8.9;
 import "../../core/05-port/IIBCModule.sol";
 
 contract MockModule is IIBCModule {
-
     function onChanOpenInit(
         Channel.Order,
         string[] calldata connectionHops,
@@ -24,18 +23,37 @@ contract MockModule is IIBCModule {
         string calldata counterpartyVersion
     ) external {}
 
-    function onChanOpenAck(string calldata portId, string calldata channelId, string calldata counterpartyVersion)
-        external {}
+    function onChanOpenAck(
+        string calldata portId,
+        string calldata channelId,
+        string calldata counterpartyVersion
+    ) external {}
 
-    function onChanOpenConfirm(string calldata portId, string calldata channelId) external {}
+    function onChanOpenConfirm(
+        string calldata portId,
+        string calldata channelId
+    ) external {}
 
-    function onChanCloseInit(string calldata portId, string calldata channelId) external {}
+    function onChanCloseInit(
+        string calldata portId,
+        string calldata channelId
+    ) external {}
 
-    function onChanCloseConfirm(string calldata portId, string calldata channelId) external {}
+    function onChanCloseConfirm(
+        string calldata portId,
+        string calldata channelId
+    ) external {}
 
-    function onRecvPacket(Packet.Data calldata, address) external returns (bytes memory) {
+    function onRecvPacket(
+        Packet.Data calldata,
+        address
+    ) external returns (bytes memory) {
         return "";
     }
 
-    function onAcknowledgementPacket(Packet.Data calldata, bytes calldata acknowledgement, address relayer) external {}
+    function onAcknowledgementPacket(
+        Packet.Data calldata,
+        bytes calldata acknowledgement,
+        address relayer
+    ) external {}
 }
