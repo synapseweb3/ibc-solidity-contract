@@ -10,7 +10,7 @@ ibc-solidity-contract is the EVM-compatible IBC implementation for chain based o
 Create `.env` in project root and put axon url like
 
 ```
-AXON_RPC_URL=http://<Ip>:<Port>
+AXON_HTTP_RPC_URL=http://<Ip>:<Port>
 ```
 
 ## Deploy IBC-Solidity Handler on Axon
