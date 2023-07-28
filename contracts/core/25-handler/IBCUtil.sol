@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 library IBCUtil {
-    function process_delgatecall(
+    function check_delegatecall(
         bool success,
         bytes memory result,
         string memory prefix

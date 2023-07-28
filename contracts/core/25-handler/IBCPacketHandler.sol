@@ -36,7 +36,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         (bool success, bytes memory res) = ibcChannelPacketAddress.delegatecall(
             abi.encodeWithSelector(IIBCPacket.sendPacket.selector, packet)
         );
-        IBCUtil.process_delgatecall(success, res, "sendPacket");
+        IBCUtil.check_delegatecall(success, res, "sendPacket");
         emit SendPacket(packet);
     }
 
@@ -52,7 +52,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         (bool success, bytes memory res) = ibcChannelPacketAddress.delegatecall(
             abi.encodeWithSelector(IIBCPacket.recvPacket.selector, msg_)
         );
-        IBCUtil.process_delgatecall(success, res, "recvPacket");
+        IBCUtil.check_delegatecall(success, res, "recvPacket");
         if (acknowledgement.length > 0) {
             (success, ) = ibcChannelPacketAddress.delegatecall(
                 abi.encodeWithSelector(
@@ -90,7 +90,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
                 acknowledgement
             )
         );
-        IBCUtil.process_delgatecall(success, res, "writeAcknowledgement");
+        IBCUtil.check_delegatecall(success, res, "writeAcknowledgement");
         emit WriteAcknowledgement(packet, acknowledgement);
     }
 
@@ -109,7 +109,7 @@ abstract contract IBCPacketHandler is Context, ModuleManager {
         (bool success, bytes memory res) = ibcChannelPacketAddress.delegatecall(
             abi.encodeWithSelector(IIBCPacket.acknowledgePacket.selector, msg_)
         );
-        IBCUtil.process_delgatecall(success, res, "acknowledgePacket");
+        IBCUtil.check_delegatecall(success, res, "acknowledgePacket");
         emit AcknowledgePacket(msg_.packet, msg_.acknowledgement);
     }
 }
