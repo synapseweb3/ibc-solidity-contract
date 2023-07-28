@@ -12,9 +12,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - uses: borales/actions-yarn@v4
-      - run: yarn install ganache
-      - run: yarn install truffle
+      - run: npm install -g yarn
+      - run: yarn add ganache
+      - run: yarn add truffle
       - run: npx truffle version
       - name: Run Ethereum locally for test
         run: npx ganache > ganache.log &
