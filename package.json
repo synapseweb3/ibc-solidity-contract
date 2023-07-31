@@ -9,10 +9,12 @@
     "@openzeppelin/contracts": "^4.8.0",
     "dotenv": "^16.1.4",
     "ethers": "^5.7.1",
-    "ganache": "^7.8.0",
     "solidity-bytes-utils": "0.8.0",
     "solidity-rlp": "^2.0.6",
-    "solidity-stringutils": "git+https://github.com/ibc-solidity/solidity-stringutils.git#716294569dd2304ae8d81681951733542f999015",
-    "truffle": "^5.9.3"
+    "solidity-stringutils": "git+https://github.com/ibc-solidity/solidity-stringutils.git#716294569dd2304ae8d81681951733542f999015"
+  },
+  "devDependencies": {
+    "ganache": "^7.9.0",
+    "truffle": "^5.11.1"
   }
 }
