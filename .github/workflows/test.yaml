@@ -13,9 +13,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: 'yarn.lock'
       - run: yarn install
       - run: npx truffle version
+
       - name: Run Ethereum locally for test
         run: npx ganache > ganache.log &
+      - run: yarn compile
       - name: Run test
         run: npx truffle test
