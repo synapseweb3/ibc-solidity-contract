@@ -1,0 +1,22 @@
+name: Migrate Contract to Axon-Alphanet
+
+on:
+  push:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+env:
+  AXON_HTTP_RPC_URL: https://rpc-alphanet-axon.ckbapp.dev/ 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: yarn install
+      - run: npx truffle version
+      - name: contracts migrations to axon-alphanet
+        run: yarn migrate

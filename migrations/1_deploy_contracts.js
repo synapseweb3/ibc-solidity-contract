@@ -39,6 +39,7 @@ module.exports = async function (deployer, network) {
     await deployer.deploy(MockModule);
     console.log("Done deploying contracts");
   } else {
+    console.log("Deploy contract for network", network);
     // production
     const packetAddress = await deployContract("IBCPacket");
     const connectionAddress = await deployContract("IBCConnection");
@@ -81,7 +82,7 @@ module.exports = async function (deployer, network) {
 };
 
 async function deployContract(contractName, ...args) {
-  const provider = new ethers.providers.JsonRpcProvider(process.env.AXON_RPC_URL);
+  const provider = new ethers.providers.JsonRpcProvider(process.env.AXON_HTTP_RPC_URL);
   const signer = new ethers.Wallet.fromMnemonic(mnemonic).connect(provider);
   const contract = artifacts.require(contractName); // load contract from json
   const abi = new ethers.utils.Interface(contract.abi);
