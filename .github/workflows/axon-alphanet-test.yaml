@@ -6,7 +6,7 @@ on:
     types: [ opened, synchronize, reopened ]
 
 env:
-  AXON_HTTP_RPC_URL: https://rpc-alphanet-axon.ckbapp.dev/ 
+  AXON_HTTP_RPC_URL: https://rpc-alphanet-axon.ckbapp.dev
 
 jobs:
   test:
