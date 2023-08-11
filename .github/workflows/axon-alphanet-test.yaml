@@ -9,7 +9,7 @@ env:
   AXON_HTTP_RPC_URL: https://rpc-alphanet-axon.ckbapp.dev
 
 jobs:
-  test:
+  axon-alphanet-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
