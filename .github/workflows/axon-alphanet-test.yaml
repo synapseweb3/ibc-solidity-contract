@@ -18,5 +18,6 @@ jobs:
           node-version: 18
       - run: yarn install
       - run: npx truffle version
+      - run: yarn compile
       - name: contracts migrations to axon-alphanet
         run: yarn migrate
