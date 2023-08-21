@@ -10,6 +10,10 @@ require("dotenv").config({
 const ethers = require("ethers");
 const mnemonic = "test test test test test test test test test test test junk";
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = async function (deployer, network) {
   if (network == "development") {
     console.log("Deploy contracts for network " + network);
@@ -45,6 +49,7 @@ module.exports = async function (deployer, network) {
     const connectionAddress = await deployContract("IBCConnection");
     const channelAddress = await deployContract("IBCChannelHandshake");
     const clientAddress = await deployContract("IBCClient");
+
     const ibcAddress = await deployContract(
       "OwnableIBCHandler",
       clientAddress,
@@ -88,6 +93,14 @@ async function deployContract(contractName, ...args) {
   const abi = new ethers.utils.Interface(contract.abi);
   const factory = new ethers.ContractFactory(abi, contract.bytecode, signer);
   const contractInstance = await factory.deploy(...args);
+
+  // wait getCode
+  let code = await provider.getCode(contractInstance.address);
+  while (code == '0x') {
+    console.log("failed to fetch code of ", contractName, contractInstance.address, " retrying");
+    await timeout(1000);
+    code = await provider.getCode(contractInstance.address);
+  }
   console.log("Done Deployment " + contractName + " at " + contractInstance.address);
   return contractInstance.address;
 }
