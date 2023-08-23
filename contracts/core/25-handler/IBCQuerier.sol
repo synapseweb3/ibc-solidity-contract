@@ -128,7 +128,7 @@ abstract contract IBCQuerier is IBCStore {
         string[] memory portIds = connectionPortIds[connectionId];
         IdentifiedChannel.Data[]
             memory identifiedChannels = new IdentifiedChannel.Data[](
-                portIds.length
+                portIds.length * channelIds.length
             );
         uint64 sequence = 0;
         for (uint i = 0; i < portIds.length; i++) {
