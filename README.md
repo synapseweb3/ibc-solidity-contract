@@ -6,11 +6,13 @@ NOTE: This is pre-beta non-production-quality software, not ready for use in a p
 
 ## Limitation
 
-`yui-ibc-solidity` is designed to be compatible with the IBC core protocol, providing minimal compatibility. In contrast, `ibc-solidity-contract` goes further by providing additional APIs to support Forcerelay's query and storage demands. Consequently, the contract size exceeds the limits imposed by standard EVM-compatible chains, such as Arbitrum, Avalanche, BSC. As a result, this project can only be deployed on Axon, taking advantage of Axon's ability to transcend the EVM's constraints.
+`yui-ibc-solidity` is designed to be compatible with the IBC core protocol, most of its [implementations](https://github.com/hyperledger-labs/yui-ibc-solidity/blob/35814ef028449b10d04f5978f25d88a25064f7aa/docs/architecture.md) are compliant with [ICS](https://github.com/cosmos/ibc) and [ibc-go](https://github.com/cosmos/ibc-go), while `ibc-solidity-contract` goes further by providing additional APIs to support Forcerelay's query and storage demands.
+
+Consequently, [the contract size exceeds the limits](https://github.com/synapseweb3/ibc-solidity-contract/issues/9) imposed by standard EVM-compatible chains, such as Arbitrum, Avalanche and BSC. As a result, this project can only be deployed on Axon, taking advantage of Axon's ability to transcend the EVM's constraints.
 
 ## Installation and Testing
 
-First, ensure that, Node.js and Yarn have been already installed:
+First, ensure that, Node.js v18 and Yarn are already installed:
 
 ```bash
 $ git clone https://github.com/synapseweb3/ibc-solidity-contract
@@ -41,7 +43,7 @@ After deployment, each standalone component in the project has been migrated int
 
 Registering light client is essential for verifying transactions from the counterparty chain. A mock light client has been registered into OwnableIBCHandler contract during the migration, which acts as an entry for counterparty.
 
-While the official light clients for verifying Cosmos and CKB transactions are in development, you can use a custom light client by following the [method](https://github.com/synapseweb3/ibc-solidity-contract/blob/master/contracts/core/02-client/ILightClient.sol) below 
+While the official light clients for verifying Cosmos and CKB transactions are in development, you can use a custom light client by the following [method](https://github.com/synapseweb3/ibc-solidity-contract/blob/master/contracts/core/02-client/ILightClient.sol) 
 
 ```solidity
 function registerClient(string calldata clientType, ILightClient client)
