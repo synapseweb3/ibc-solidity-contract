@@ -31,4 +31,22 @@ contract("ICS20TransferERC20Allowlist", ([account]) => {
     assert.equal(await myToken.balanceOf(account), 51);
     assert.equal(await myToken.totalSupply(), 51);
   });
+
+  it("should be able to transfer ERC20", async () => {
+    const ibcHandler = await IBCHandler.deployed();
+    const transfer = await ICS20TransferERC20Allowlist.new(ibcHandler.address);
+    const myToken = await ERC20PresetMinterPauser.new("MyToken", "MT");
+
+    await myToken.mint(account, 100);
+    // Transfer without allowance should fail.
+    await transfer.transferFromShouldFail(
+      account,
+      transfer.address,
+      myToken.address,
+      51
+    );
+    await myToken.approve(transfer.address, 51, { from: account });
+    await transfer.transferFrom(account, transfer.address, myToken.address, 51);
+    assert.equal(await myToken.balanceOf(account), 49);
+  });
 });
