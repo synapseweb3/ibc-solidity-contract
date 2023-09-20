@@ -58,6 +58,7 @@ module.exports = async function (deployer, network) {
       packetAddress
     );
     const mockTransferAddress = await deployContract("MockTransfer", ibcAddress);
+    const transferAddress = await deployContract("ICS20TransferERC20", ibcAddress);
     const mockClient = await deployContract("MockClient");
     const ibcHandler = await IBCHandler.at(ibcAddress);
 
@@ -83,6 +84,9 @@ module.exports = async function (deployer, network) {
     // Register Module (optional, just for the cooperation of test on Axon endpoint)
     await ibcHandler.bindPort("port-0", mockTransferAddress);
     console.log("Register Mock Transfer: port-0");
+
+    await ibcHandler.bindPort("transfer", transferAddress);
+    console.log("Register Transfer: transfer");
   }
 };
 
