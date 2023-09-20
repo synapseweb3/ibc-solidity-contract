@@ -3,7 +3,7 @@ const ICS20TransferERC20 = artifacts.require("ICS20TransferERC20Test");
 const ERC20PresetMinterPauser = artifacts.require("ERC20PresetMinterPauser");
 
 contract("ICS20TransferERC20", ([account]) => {
-  it("should be able to mint/burn ERC20", async () => {
+  it("should be able to mint ERC20", async () => {
     const ibcHandler = await IBCHandler.deployed();
     const transfer = await ICS20TransferERC20.new(ibcHandler.address);
 
@@ -22,4 +22,5 @@ contract("ICS20TransferERC20", ([account]) => {
     assert.equal(await myToken.balanceOf(account), 151);
     assert.equal(await myToken.totalSupply(), 151);
   });
+  // Other functions are tested in ICS20TransferERC20Allowlist
 });

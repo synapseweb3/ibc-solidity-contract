@@ -30,7 +30,7 @@ contract ICS20TransferERC20 is ICS20Transfer {
         }
     }
 
-    function _mint(address account, string memory denom, uint256 amount) internal override returns (bool) {
+    function _mint(address account, string memory denom, uint256 amount) internal virtual override returns (bool) {
         // Deploy an ERC20 contract for each (sink zone) denom seen.
         if (address(denomTokenContract[denom]) == address(0)) {
             string memory name = string.concat("IBC/", hexEncode(abi.encodePacked(sha256(bytes(denom)))));
