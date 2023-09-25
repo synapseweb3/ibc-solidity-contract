@@ -65,7 +65,7 @@ contract ICS20TransferERC20 is ICS20Transfer {
         return string(converted);
     }
 
-    // a copy from https://github.com/provable-things/ethereum-api/blob/161552ebd4f77090d86482cff8c863cf903c6f5f/oraclizeAPI_0.6.sol
+    // a copy from https://github.com/provable-things/ethereum-api/blob/161552ebd4f77090d86482cff8c863cf903c6f5f/oraclizeAPI_0.6.sol#L871-L897
     function parseAddr(string memory _a) internal pure returns (address _parsedAddress) {
         bytes memory tmp = bytes(_a);
         uint160 iaddr = 0;
