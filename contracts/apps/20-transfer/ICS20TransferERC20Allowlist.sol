@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 // Source denom is interpreted as ERC20 contract address in hex with the 0x prefix.
 contract ICS20TransferERC20Allowlist is ICS20TransferERC20, AccessControl {
     constructor(IBCHandler ibcHandler_) ICS20TransferERC20(ibcHandler_) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
     function setDenomTokenContract(string calldata denom, ERC20PresetMinterPauser tokenContract) onlyRole(DEFAULT_ADMIN_ROLE) external {
