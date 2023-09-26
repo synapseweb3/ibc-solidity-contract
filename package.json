@@ -6,7 +6,7 @@
     "query": "truffle exec './scripts/query_packet.js' --network axon"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/contracts": "^4.9.3",
     "dotenv": "^16.1.4",
     "ethers": "^5.7.1",
     "solidity-bytes-utils": "0.8.0",
