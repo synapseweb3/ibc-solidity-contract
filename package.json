@@ -2,8 +2,7 @@
   "scripts": {
     "compile": "truffle compile",
     "migrate": "truffle migrate --network axon",
-    "send": "truffle exec './scripts/send_packet.js' --network axon",
-    "query": "truffle exec './scripts/query_packet.js' --network axon"
+    "send": "truffle exec './scripts/send_erc20_packet.js' --network axon"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.3",

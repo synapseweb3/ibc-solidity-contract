@@ -58,7 +58,7 @@ module.exports = async function (deployer, network) {
       packetAddress
     );
     const mockTransferAddress = await deployContract("MockTransfer", ibcAddress);
-    const transferAddress = await deployContract("ICS20TransferERC20", ibcAddress);
+    const transferAddress = await deployContract("ICS20TransferERC20Allowlist", ibcAddress);
     const mockClient = await deployContract("MockClient");
     const ibcHandler = await IBCHandler.at(ibcAddress);
 

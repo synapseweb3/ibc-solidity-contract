@@ -6,7 +6,7 @@ async function main() {
   console.log("Receiver should be:", receiver);
   const sender = process.env.SENDER;
 
-  const ICS20TransferERC20 = await artifacts.require("ICS20TransferERC20");
+  const ICS20TransferERC20 = await artifacts.require("ICS20TransferERC20Allowlist");
   const IERC20 = await artifacts.require("IERC20");
 
   const transfer = await ICS20TransferERC20.at(
