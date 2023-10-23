@@ -12,6 +12,8 @@ import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol"
 contract ICS20TransferERC20 is ICS20Transfer {
     // Map sink denom to ERC20.
     mapping(string => ERC20PresetMinterPauser) public denomTokenContract;
+    // Map denom hash to denom full path
+    mapping(bytes32 => string) public denomTraces;
 
     constructor(IBCHandler ibcHandler_) ICS20Transfer(ibcHandler_) {
     }
@@ -33,8 +35,14 @@ contract ICS20TransferERC20 is ICS20Transfer {
     function _mint(address account, string memory denom, uint256 amount) internal virtual override returns (bool) {
         // Deploy an ERC20 contract for each (sink zone) denom seen.
         if (address(denomTokenContract[denom]) == address(0)) {
-            string memory name = string.concat("IBC/", hexEncode(abi.encodePacked(sha256(bytes(denom)))));
+            bytes32 dh = sha256(bytes(denom));
+            string memory name = string.concat("IBC/", hexEncode(abi.encodePacked(dh)));
             denomTokenContract[denom] = new ERC20PresetMinterPauser(name, "");
+            // store denomTrace(hash -> denom)
+            bytes memory denomTrace = bytes(denomTraces[dh]); // Uses memory
+            if (denomTrace.length == 0) {
+                denomTraces[dh] = denom;
+            }
         }
         denomTokenContract[denom].mint(account, amount);
         return true;
