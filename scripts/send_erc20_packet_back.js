@@ -2,9 +2,9 @@
 
 async function main() {
   // First provider account.
-  const [sender] = await web3.eth.getAccounts();
+  const [receiver] = await web3.eth.getAccounts();
   // Receiver should be CKB address, which is first 20 bytes of hash of sender's lock_script
-  const receiver = process.env.RECEIVER;
+  const sender = process.env.SENDER;
   console.log("Sender and receiver:", sender, receiver);
 
   const ICS20TransferERC20 = await artifacts.require("ICS20TransferERC20Allowlist");
@@ -21,14 +21,16 @@ async function main() {
   // Check token associated with the denom that is created before, if not exist, create one
   let tokenAddr = await transfer.denomTokenContract(denom);
   if (tokenAddr == "0x0000000000000000000000000000000000000000") {
-    const ERC20PresetMinterPauser = await artifacts.require("ERC20PresetMinterPauser");
-    const token_name = process.env.TOKEN_NAME;
-    const token_symbol = process.env.TOKEN_SIMBOL;
-    const token = await ERC20PresetMinterPauser.new(token_name, token_symbol);
-    await token.grantRole(await token.MINTER_ROLE(), transfer.address);
-    await token.mint(sender, 999);
-    await transfer.setDenomTokenContract(denom, token.address);
-    tokenAddr = token.address;
+    // const ERC20PresetMinterPauser = await artifacts.require("ERC20PresetMinterPauser");
+    // const token_name = process.env.TOKEN_NAME;
+    // const token_symbol = process.env.TOKEN_SIMBOL;
+    // const token = await ERC20PresetMinterPauser.new(token_name, token_symbol);
+    // await token.grantRole(await token.MINTER_ROLE(), transfer.address);
+    // await token.mint(sender, 999);
+    // await transfer.setDenomTokenContract(denom, token.address);
+    // tokenAddr = token.address;
+    console.error("Axon cannot be source zone now, so the transferred token should already exist on CKB");
+    return;
   }
 
   // Send packet: ERC20 approve and ICS20 sendTransfer.
