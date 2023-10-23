@@ -16,6 +16,14 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
 
     IBCHandler ibcHandler;
 
+    /**
+     * @dev Throws if called by any account other than the IBC contract.
+     */
+    modifier onlyIBC() {
+        require(address(ibcHandler) == _msgSender(), "IBCAppBase: caller is not the IBC contract");
+        _;
+    }
+
     mapping(string => address) channelEscrowAddresses;
 
     constructor(IBCHandler ibcHandler_) {
@@ -56,6 +64,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         external
         virtual
         override
+        onlyIBC
         returns (bytes memory acknowledgement)
     {
         FungibleTokenPacketData.Data memory data = FungibleTokenPacketData.decode(packet.data);
@@ -83,6 +92,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         external
         virtual
         override
+        onlyIBC
     {
         if (!_isSuccessAcknowledgement(acknowledgement)) {
             _refundTokens(FungibleTokenPacketData.decode(packet.data), packet.sourcePort, packet.sourceChannel);
@@ -96,8 +106,8 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         string calldata channelId,
         ChannelCounterparty.Data calldata,
         string calldata
-    ) external virtual override {
-        // TODO authenticate a capability
+    ) external virtual override onlyIBC
+    {
         channelEscrowAddresses[channelId] = address(this);
     }
 
@@ -109,8 +119,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         ChannelCounterparty.Data calldata,
         string calldata,
         string calldata
-    ) external virtual override {
-        // TODO authenticate a capability
+    ) external virtual override onlyIBC {
         channelEscrowAddresses[channelId] = address(this);
     }
 
@@ -118,13 +127,14 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         external
         virtual
         override
+        onlyIBC
     {}
 
-    function onChanOpenConfirm(string calldata portId, string calldata channelId) external virtual override {}
+    function onChanOpenConfirm(string calldata portId, string calldata channelId) external virtual override onlyIBC {}
 
-    function onChanCloseInit(string calldata portId, string calldata channelId) external virtual override {}
+    function onChanCloseInit(string calldata portId, string calldata channelId) external virtual override onlyIBC {}
 
-    function onChanCloseConfirm(string calldata portId, string calldata channelId) external virtual override {}
+    function onChanCloseConfirm(string calldata portId, string calldata channelId) external virtual override onlyIBC {}
 
     /// Internal functions ///
 
