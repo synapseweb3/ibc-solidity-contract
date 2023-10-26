@@ -2,12 +2,13 @@
 
 async function main() {
   // First provider account.
-  const [receiver] = await web3.eth.getAccounts();
+  const [sender] = await web3.eth.getAccounts();
   // Receiver should be CKB address, which is first 20 bytes of hash of sender's lock_script
-  const sender = process.env.SENDER;
+  const receiver = process.env.RECEIVER;
   console.log("Sender and receiver:", sender, receiver);
 
-  const ICS20TransferERC20 = await artifacts.require("ICS20TransferERC20Allowlist");
+  const ICS20TransferERC20 = await artifacts.require("ICS20TransferERC20");
+  const IERC20 = await artifacts.require("IERC20");
 
   const transfer = await ICS20TransferERC20.at(
     process.env.TRANSFER_CONTRACT_ADDRESS
@@ -18,7 +19,7 @@ async function main() {
 
   const denom = `${port}/${channel}/${process.env.DENOM}`;
 
-  // Check token associated with the denom that is created before, if not exist, create one
+  // Check token associated with the denom that is created before
   let tokenAddr = await transfer.denomTokenContract(denom);
   if (tokenAddr == "0x0000000000000000000000000000000000000000") {
     // const ERC20PresetMinterPauser = await artifacts.require("ERC20PresetMinterPauser");
@@ -33,13 +34,21 @@ async function main() {
     return;
   }
 
+  // Check balance.
+  const amount = process.env.AMOUNT;
+  const token = await IERC20.at(tokenAddr);
+  if ((await token.balanceOf(receiver)) >= amount) {
+    throw "balance should at least be " + amount;
+  }
+
   // Send packet: ERC20 approve and ICS20 sendTransfer.
-  await token.approve(transfer.address, 499, {
+  await token.approve(transfer.address, amount, {
     from: sender,
   });
-  await transfer.sendTransfer(denom, 499, receiver, port, channel, 0, {
+  let result = await transfer.sendTransfer(denom, amount, receiver, port, channel, 0, {
     from: sender,
   });
+  console.log(`Successfully send ${amount} token to ${receiver} with denom ${denom}: ${result}`);
 }
 
 module.exports = (callback) => {
