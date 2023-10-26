@@ -60,9 +60,9 @@ function bindPort(string calldata portId, address moduleAddress)
 
 To comply with IBC protocol regulations, a channel cannot function until it is paired with a business module through a port.
 
-## Send ICS20 Packet (WIP)
+## Send ICS20 Packet (using ERC20)
 
-In the previous migration step, a standard ICS20 transfer module has already been bound at port `port-0` by default. Run script `scripts/send_packet.js` to send a standard custom ICS20 packet:
+In the previous migration step, a standard ICS20 transfer module has already been bound at port `transfer` by default. Run script `scripts/send_erc20_packet.js` to send a standard custom ICS20 packet:
 
 ```bash
 $ yarn send
