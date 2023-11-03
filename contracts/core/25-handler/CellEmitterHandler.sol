@@ -1,45 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
-import "../24-host/IBCStore.sol";
+import "../../proto/CellEmitter.sol";
 
-abstract contract CellEmitterHandler is IBCStore {
-    event RegisterCellEmitterFilter(string filter);
-    event RemoveCellEmitterFilter(string filter);
+abstract contract CellEmitterHandler {
+    event RegisterCellEmitterFilter(CellEmitter.SearchKey filter);
+    event RemoveCellEmitterFilter(CellEmitter.SearchKey filter);
 
     function registerCellEmitterFilter(
-        string calldata filter
-    ) external returns (bool) {
-        uint block_number = emitterFilters[filter];
-        if (block_number > 0) {
-            return false;
-        }
-        emitterFilters[filter] = block.number;
-        filterKeys.push(filter);
+        CellEmitter.SearchKey calldata filter
+    ) external {
         emit RegisterCellEmitterFilter(filter);
-        return true;
     }
 
     function removeCellEmitterFilter(
-        string calldata filter
-    ) external returns (bool) {
-        uint block_number = emitterFilters[filter];
-        if (block_number == 0) {
-            return false;
-        }
-        delete emitterFilters[filter];
-        for (uint i = 0; i < filterKeys.length; i++) {
-            if (emitterFilters[filterKeys[i]] == 0) {
-                filterKeys[i] = filterKeys[filterKeys.length - 1];
-                filterKeys.pop();
-                break;
-            }
-        }
+        CellEmitter.SearchKey calldata filter
+    ) external {
         emit RemoveCellEmitterFilter(filter);
-        return true;
-    }
-
-    function getCellEmitterFilters() external view returns (string[] memory) {
-        return filterKeys;
     }
 }

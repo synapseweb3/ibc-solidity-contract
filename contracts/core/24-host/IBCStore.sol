@@ -41,9 +41,6 @@ abstract contract IBCStore {
     uint64 public nextConnectionSequence;
     uint64 public nextChannelSequence;
 
-    mapping(string => uint) emitterFilters;
-    string[] filterKeys;
-
     // Storage accessors
 
     function getClient(
