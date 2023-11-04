@@ -2,6 +2,25 @@
 pragma solidity ^0.8.9;
 
 library CellEmitter {
+    struct Cell {
+        uint64 capacity;
+        bytes data;
+        Script lockScript;
+        Script[] typeScript;
+    }
+
+    struct Header {
+        uint32 version;
+        uint32 compactTarget;
+        uint64 timestamp;
+        uint64 number;
+        uint64 epoch;
+        bytes32 parentHash;
+        bytes32 extraHash;
+        bytes32 dao;
+        uint128 nonce;
+    }
+
     struct SearchKey {
         Script script;
         ScriptType scriptType;
