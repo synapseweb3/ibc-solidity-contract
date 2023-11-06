@@ -18,14 +18,4 @@ abstract contract CellEmitterHandler {
     ) external {
         emit RemoveCellEmitterFilter(filter);
     }
-
-    // FIXME: add authticate attribute
-    function upload_ckb_cell(CellEmitter.Cell calldata cell) external {
-        // TODO: call system contract
-    }
-
-    // FIXME: add authticate attribute
-    function upload_ckb_header(CellEmitter.Header calldata header) external {
-        // TODO: call system contract
-    }
 }
