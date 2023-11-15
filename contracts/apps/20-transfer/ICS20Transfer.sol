@@ -60,7 +60,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
 
     /// Module callbacks ///
 
-    function onRecvPacket(Packet.Data calldata packet, address relayer)
+    function onRecvPacket(Packet.Data calldata packet, address /* relayer */)
         external
         virtual
         override
@@ -88,7 +88,7 @@ abstract contract ICS20Transfer is Context, IICS20Transfer {
         }
     }
 
-    function onAcknowledgementPacket(Packet.Data calldata packet, bytes calldata acknowledgement, address relayer)
+    function onAcknowledgementPacket(Packet.Data calldata packet, bytes calldata acknowledgement, address /*relayer*/)
         external
         virtual
         override
