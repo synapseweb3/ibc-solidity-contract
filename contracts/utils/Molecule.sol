@@ -12,6 +12,14 @@ library Molecule {
     }
 
     // return offset and size of WitnessArgs field (the molecule bytes header is trimed)
+    function readCKBTxWitnessCount(
+        bytes calldata input
+    ) public pure returns (uint256 count) {
+        uint256 offset = tableOffset(input, 0, 1);
+        count = tableFieldsCount(input, offset);
+    }
+
+    // return offset and size of WitnessArgs field (the molecule bytes header is trimed)
     function readCKBTxWitness(
         bytes calldata input,
         uint8 witnessIndex,

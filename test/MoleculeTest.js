@@ -28,6 +28,11 @@ contract("Molecule Test", ([account]) => {
     const rawTxFields = await molecule.tableFieldsCount(txBytes, rawTxOffset);
     assert.equal(rawTxFields, 6);
 
+    // parse transaction witness output type field
+    const witnessCount = await molecule.readCKBTxWitnessCount(txBytes);
+    console.log("witness count", witnessCount.toString());
+    assert.equal(witnessCount, 3);
+
     // parse transaction witness lock field
     const {0: lockOffset, 1: lockSize} = await molecule.readCKBTxWitness(txBytes, 0, 0);
     console.log("witness lock offset", lockOffset.toString(), "size", lockSize.toString());
