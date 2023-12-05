@@ -17,15 +17,11 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
-
-// require('dotenv').config();
-// const mnemonic = process.env["MNEMONIC"];
-// const infuraProjectId = process.env["INFURA_PROJECT_ID"];
-
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 require("dotenv").config({
   path: `${__dirname}/.env`,
 });
+
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -43,25 +39,30 @@ module.exports = {
     // You should run a client (like ganache, geth, or parity) in a separate terminal
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
-    //
     development: {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 8545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
     },
+
+    // Useful for deploying to a public network.
+    // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
+    // goerli_example: {
+    //   provider: () => new HDWalletProvider(MNEMONIC, `https://goerli.infura.io/v3/${PROJECT_ID}`),
+    //   network_id: 5,       // Goerli's id
+    //   confirmations: 2,    // # of confirmations to wait between deployments. (default: 0)
+    //   timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
+    //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
+    // },
     axon: {
       network_id: "*",       // Any network (default: none)
-      provider: () => new HDWalletProvider({
-        mnemonic: "test test test test test test test test test test test junk",
-        providerOrUrl: process.env.AXON_HTTP_RPC_URL,
-      }),
+      provider: () => new HDWalletProvider(
+        "test test test test test test test test test test test junk",
+        process.env.AXON_HTTP_RPC_URL || `https://rpc-alphanet-axon.ckbapp.dev`
+      ),
+      // Gas price used for deploys. Default is 20000000000 (20 Gwei).
+      gasPrice: 8,
     },
-    //
-    // goerli: {
-    //   provider: () => new HDWalletProvider(mnemonic, `https://goerli.infura.io/v3/${infuraProjectId}`),
-    //   network_id: 5,       // Goerli's id
-    //   chain_id: 5
-    // }
   },
 
   // Set default mocha options here, use special reporters etc.
