@@ -26,6 +26,8 @@ module.exports = async function (deployer, network) {
   let IBCHandler = undefined;
 
   if (network == "axon") {
+    // The contract size of OwnableIBCHandler is too large to deploy on a normal EVM chain.
+    // see https://github.com/synapseweb3/ibc-solidity-contract/issues/9
     IBCHandler = artifacts.require("OwnableIBCHandler");
 
   } else {
