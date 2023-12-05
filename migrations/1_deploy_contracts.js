@@ -2,8 +2,6 @@ const IBCPacket = artifacts.require("IBCPacket");
 const IBCConnection = artifacts.require("IBCConnection");
 const IBCChannel = artifacts.require("IBCChannelHandshake");
 const IBCClient = artifacts.require("IBCClient");
-const IBCOwnableHandler = artifacts.require("OwnableIBCHandler");
-const IBCMockHandler = artifacts.require("IBCMockHandler");
 const MockClient = artifacts.require("MockClient");
 const MockModule = artifacts.require("MockModule");
 
@@ -24,28 +22,23 @@ module.exports = async function (deployer, network) {
   const ibcChannel = await IBCChannel.deployed();
   const mockClient = await MockClient.deployed();
 
-  let ibcHandler = undefined;
-  if (network == "development") {
-    // 2. deploy IBCMockHandler
+  // 2. deploy IBCMockHandler
+  let IBCHandler = undefined;
 
-    await deployer.deploy(
-      IBCMockHandler,
-      ibcClient.address,
-      ibcConnection.address,
-      ibcChannel.address,
-      ibcPacket.address
-    );
+  if (network == "axon") {
+    IBCHandler = artifacts.require("OwnableIBCHandler");
+
   } else {
-    // 2. deploy OwnableIBCHandler
-    await deployer.deploy(
-      IBCOwnableHandler,
-      ibcClient.address,
-      ibcConnection.address,
-      ibcChannel.address,
-      ibcPacket.address
-    );
+    IBCHandler = artifacts.require("IBCMockHandler");
   }
-  ibcHandler = await IBCMockHandler.deployed();
+  await deployer.deploy(
+    IBCHandler,
+    ibcClient.address,
+    ibcConnection.address,
+    ibcChannel.address,
+    ibcPacket.address
+  );
+  ibcHandler = await IBCHandler.deployed();
 
   // 3. register Client
   const axonClientType = "07-axon";
