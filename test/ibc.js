@@ -4,12 +4,14 @@ const IBCPacket = artifacts.require("IBCPacket");
 const IBCHandler = artifacts.require("IBCMockHandler");
 const MockModule = artifacts.require("MockModule");
 
+const AXON_MOCK_CLIENT_TYPE = "07-axon";
+
 contract("IBC", (accounts) => {
   it("update client", async () => {
     const ibcHandler = await IBCHandler.deployed();
     // Client Create
     const msgCreateClient = {
-      clientType: "MockClient",
+      clientType: AXON_MOCK_CLIENT_TYPE,
       consensusState: 1234,
       clientState: 1234,
     };
@@ -30,7 +32,7 @@ contract("IBC", (accounts) => {
     const ibcHandler = await IBCHandler.deployed();
     // Client Create
     const msgCreateClient = {
-      clientType: "MockClient",
+      clientType: AXON_MOCK_CLIENT_TYPE,
       consensusState: 1234,
       clientState: 1234,
     };
@@ -92,13 +94,13 @@ contract("IBC", (accounts) => {
 
     // ---------- Channel ---------- //
     // Bind Port
-    let portId = "port-0";
+    const portId1 = "port-1";
     const mockModule = await MockModule.deployed();
-    await ibcHandler.bindPort(portId, mockModule.address);
+    await ibcHandler.bindPort(portId1, mockModule.address);
     // Channel Open Init
-    const counterpartyPortId = "counterparty-port-0";
+    const counterpartyPortId = "counterparty-port-1";
     const msgChannelOpenInit = {
-      portId: portId,
+      portId: portId1,
       channel: {
         state: 1,
         ordering: 1,
@@ -117,7 +119,7 @@ contract("IBC", (accounts) => {
     // Channel Open Ack
     const counterpartyChannelId = "counterparty-channel-0";
     const msgChannelOpenAck = {
-      portId: portId,
+      portId: portId1,
       channelId: channelId,
       counterpartyVersion: "1",
       counterpartyChannelId: counterpartyChannelId,
@@ -131,7 +133,7 @@ contract("IBC", (accounts) => {
     // Send Packet
     const msgSendPacket = {
       sequence: 1,
-      sourcePort: portId,
+      sourcePort: portId1,
       sourceChannel: channelId,
       destinationPort: counterpartyPortId,
       destinationChannel: counterpartyChannelId,
@@ -147,7 +149,7 @@ contract("IBC", (accounts) => {
         sequence: 1,
         sourcePort: counterpartyPortId,
         sourceChannel: counterpartyChannelId,
-        destinationPort: portId,
+        destinationPort: portId1,
         destinationChannel: channelId,
         data: 1234,
         timeoutHeight: { revisionNumber: 0, revisionHeight: 0 },
@@ -164,7 +166,7 @@ contract("IBC", (accounts) => {
     const ibcHandler = await IBCHandler.deployed();
     // Client Create
     const msgCreateClient = {
-      clientType: "MockClient",
+      clientType: AXON_MOCK_CLIENT_TYPE,
       consensusState: 1234,
       clientState: 1234,
     };
@@ -212,14 +214,14 @@ contract("IBC", (accounts) => {
 
     // ---------- Channel ---------- //
     // Bind a new Port
-    portId = "port-1";
+    const portId2 = "port-2";
     const mockModule = await MockModule.deployed();
-    await ibcHandler.bindPort(portId, mockModule.address);
+    await ibcHandler.bindPort(portId2, mockModule.address);
     // Channel Open Try
     const counterpartyChannelId = "counterparty-channel-1";
-    const counterpartyPortId = "counterparty-" + portId;
+    const counterpartyPortId = "counterparty-" + portId2;
     const msgChannelOpenTry = {
-      portId: portId,
+      portId: portId2,
       previousChannelId: "",
       channel: {
         state: 2,
@@ -241,7 +243,7 @@ contract("IBC", (accounts) => {
     console.log("pass channel open try");
     // Channel Open Confirm
     const msgChannelOpenConfirm = {
-      portId: portId,
+      portId: portId2,
       channelId: channelId,
       proofAck: 1234,
       proofHeight: { revisionNumber: 0, revisionHeight: 999 },
@@ -253,7 +255,7 @@ contract("IBC", (accounts) => {
     // Send Packet
     const msgSendPacket = {
       sequence: 1,
-      sourcePort: portId,
+      sourcePort: portId2,
       sourceChannel: channelId,
       destinationPort: counterpartyPortId,
       destinationChannel: counterpartyChannelId,
@@ -269,7 +271,7 @@ contract("IBC", (accounts) => {
         sequence: 1,
         sourcePort: counterpartyPortId,
         sourceChannel: counterpartyChannelId,
-        destinationPort: portId,
+        destinationPort: portId2,
         destinationChannel: channelId,
         data: 1234,
         timeoutHeight: { revisionNumber: 0, revisionHeight: 0 },
