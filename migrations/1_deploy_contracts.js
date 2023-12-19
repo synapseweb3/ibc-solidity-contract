@@ -61,4 +61,8 @@ module.exports = async function (deployer, network) {
   const ics20Transfer = await ICS20TransferERC20.deployed();
   await ibcHandler.bindPort("transfer", ics20Transfer.address);
   console.log("Registered ICS20TransferERC20 Module: transfer");
+
+  // 6. print OwnableIBCHandler and ICS20TransferERC20 addresses for CI parsing
+  console.log("Done Deployment OwnableIBCHandler at " + ibcHandler.address);
+  console.log("Done Deployment ICS20TransferERC20 at " + ics20Transfer.address);
 };
