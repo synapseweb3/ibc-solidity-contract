@@ -63,6 +63,17 @@ module.exports = {
       // Gas price used for deploys. Default is 20000000000 (20 Gwei).
       gasPrice: 8,
     },
+
+    // forcerelay contract is too large to be executed, it needs special version of axon
+    axon_forcerelay: {
+      network_id: "*",       // Any network (default: none)
+      provider: () => new HDWalletProvider(
+        "test test test test test test test test test test test junk",
+        process.env.AXON_HTTP_RPC_URL
+      ),
+      // Gas price used for deploys. Default is 20000000000 (20 Gwei).
+      gasPrice: 8,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.

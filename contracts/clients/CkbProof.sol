@@ -116,13 +116,7 @@ function ckbMbtVerify(VerifyProofPayload memory payload) view returns (bool) {
     // axon_precompile_address(0x07)
     address ckb_mbt_addr = address(0x0107);
     (bool isSuccess, bytes memory res) = ckb_mbt_addr.staticcall(
-        abi.encode(
-            payload.verifyType,
-            payload.transactionsRoot,
-            payload.witnessesRoot,
-            payload.rawTransactionsRoot,
-            payload.proof
-        )
+        abi.encode(payload)
     );
 
     if (!isSuccess) {

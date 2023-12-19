@@ -58,8 +58,7 @@ library CkbTestProof {
         // Create the VerifyProofPayload
         VerifyProofPayload memory payload = VerifyProofPayload({
             verifyType: axonObjProof.proofPayload.verifyType,
-            // transactionsRoot: header.transactionsRoot,
-            transactionsRoot: 0x7c57536c95df426f5477c344f8f949e4dfd25443d6f586b4f350ae3e4b870433,
+            transactionsRoot: header.transactionsRoot,
             witnessesRoot: axonObjProof.proofPayload.witnessesRoot,
             rawTransactionsRoot: axonObjProof.proofPayload.rawTransactionsRoot,
             proof: axonObjProof.proofPayload.proof
