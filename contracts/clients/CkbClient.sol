@@ -4,10 +4,12 @@ pragma solidity ^0.8.9;
 import "../core/02-client/ILightClient.sol";
 import "../core/02-client/IBCHeight.sol";
 import "../proto/Client.sol";
+import "./CkbProof.sol";
 
 // MokkClient implements https://github.com/datachainlab/ibc-mock-client
 // WARNING: This client is intended to be used for testing purpose. Therefore, it is not generally available in a production, except in a fully trusted environment.
 contract CkbClient is ILightClient {
+    using CkbProof for *;
     uint64 private constant MAX_UINT64 = 18446744073709551615;
     constructor() {}
 
@@ -66,12 +68,12 @@ contract CkbClient is ILightClient {
         Height.Data calldata,
         uint64,
         uint64,
-        bytes calldata,
+        bytes calldata proof,
         bytes memory,
-        bytes memory,
-        bytes calldata
-    ) external pure override returns (bool) {
-        return true;
+        bytes memory path,
+        bytes calldata value
+    ) external override returns (bool) {
+        return CkbProof.verifyProof(proof, path, value);
     }
 
     /**
