@@ -6,8 +6,6 @@ const MockClient = artifacts.require("MockClient");
 const MockModule = artifacts.require("MockModule");
 const CkbClient = artifacts.require("CkbClient");
 const Molecule = artifacts.require("Molecule");
-const CkbProof = artifacts.require("CkbProof");
-const CkbLightClient = artifacts.require("CkbLightClient");
 
 module.exports = async function (deployer, network) {
   console.log("Deploy contracts for network", network);
@@ -47,11 +45,7 @@ module.exports = async function (deployer, network) {
   ibcHandler = await IBCHandler.deployed();
 
   const molecule = await Molecule.new();
-  const ckbLightClient = await CkbLightClient.new();
-  CkbProof.link(molecule);
-  CkbProof.link(ckbLightClient);
-  const ckbProof = await CkbProof.new();
-  CkbClient.link(ckbProof);
+  CkbClient.link(molecule);
   await deployer.deploy(CkbClient);
   const ckbClient = await CkbClient.deployed();
 
