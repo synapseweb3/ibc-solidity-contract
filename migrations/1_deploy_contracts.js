@@ -20,20 +20,11 @@ module.exports = async function (deployer, network) {
   await deployer.deploy(MockClient);
   await deployer.deploy(MockModule);
 
-  const molecule = await Molecule.new();
-  const ckbLightClient = await CkbLightClient.new();
-  CkbProof.link(molecule);
-  CkbProof.link(ckbLightClient);
-  const ckbProof = await CkbProof.new();
-  CkbClient.link(ckbProof);
-  await deployer.deploy(CkbClient);
-
   const ibcClient = await IBCClient.deployed();
   const ibcPacket = await IBCPacket.deployed();
   const ibcConnection = await IBCConnection.deployed();
   const ibcChannel = await IBCChannel.deployed();
   const mockClient = await MockClient.deployed();
-  const ckbClient = await CkbClient.deployed();
 
   // 2. deploy IBCMockHandler
   let IBCHandler = undefined;
@@ -54,6 +45,15 @@ module.exports = async function (deployer, network) {
     ibcPacket.address
   );
   ibcHandler = await IBCHandler.deployed();
+
+  const molecule = await Molecule.new();
+  const ckbLightClient = await CkbLightClient.new();
+  CkbProof.link(molecule);
+  CkbProof.link(ckbLightClient);
+  const ckbProof = await CkbProof.new();
+  CkbClient.link(ckbProof);
+  await deployer.deploy(CkbClient);
+  const ckbClient = await CkbClient.deployed();
 
   // 3. register Client
   const axonClientType = "07-axon";

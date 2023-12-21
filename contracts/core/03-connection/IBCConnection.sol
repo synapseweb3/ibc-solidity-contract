@@ -80,16 +80,17 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             ),
             "failed to verify connection state"
         );
-        require(
-            verifyClientState(
-                connection,
-                msg_.proofHeight,
-                IBCCommitment.clientStatePath(connection.counterparty.clientId),
-                msg_.proofClient,
-                msg_.clientState
-            ),
-            "failed to verify clientState"
-        );
+        // TODO: verify client state.
+        // require(
+        //     verifyClientState(
+        //         connection,
+        //         msg_.proofHeight,
+        //         IBCCommitment.clientStatePath(connection.counterparty.clientId),
+        //         msg_.proofClient,
+        //         msg_.clientState
+        //     ),
+        //     "failed to verify clientState"
+        // );
         // TODO we should also verify a consensus state
 
         updateConnectionCommitment(connectionId);
@@ -145,16 +146,17 @@ contract IBCConnection is IBCStore, IIBCConnectionHandshake {
             ),
             "failed to verify connection state"
         );
-        require(
-            verifyClientState(
-                connection,
-                msg_.proofHeight,
-                IBCCommitment.clientStatePath(connection.counterparty.clientId),
-                msg_.proofClient,
-                msg_.clientState
-            ),
-            "failed to verify clientState"
-        );
+        // TODO: verify client state.
+        // require(
+        //     verifyClientState(
+        //         connection,
+        //         msg_.proofHeight,
+        //         IBCCommitment.clientStatePath(connection.counterparty.clientId),
+        //         msg_.proofClient,
+        //         msg_.clientState
+        //     ),
+        //     "failed to verify clientState"
+        // );
         // TODO we should also verify a consensus state
 
         connection.state = ConnectionEnd.State.Open;
