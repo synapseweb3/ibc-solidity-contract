@@ -4,6 +4,8 @@ const IBCChannel = artifacts.require("IBCChannelHandshake");
 const IBCClient = artifacts.require("IBCClient");
 const MockClient = artifacts.require("MockClient");
 const MockModule = artifacts.require("MockModule");
+const CkbClient = artifacts.require("CkbClient");
+const Molecule = artifacts.require("Molecule");
 
 module.exports = async function (deployer, network) {
   console.log("Deploy contracts for network", network);
@@ -42,11 +44,16 @@ module.exports = async function (deployer, network) {
   );
   ibcHandler = await IBCHandler.deployed();
 
+  const molecule = await Molecule.new();
+  CkbClient.link(molecule);
+  await deployer.deploy(CkbClient);
+  const ckbClient = await CkbClient.deployed();
+
   // 3. register Client
   const axonClientType = "07-axon";
   await ibcHandler.registerClient(axonClientType, mockClient.address);
   const ckbClientType = "07-ckb4ibc";
-  await ibcHandler.registerClient(ckbClientType, mockClient.address);
+  await ibcHandler.registerClient(ckbClientType, ckbClient.address);
 
   // 4. register MockTransfer Module
   const MockTransfer = artifacts.require("MockTransfer");

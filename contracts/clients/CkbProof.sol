@@ -57,59 +57,23 @@ struct Envelope {
     bytes content;
 }
 
-library CkbLightClient {
-    event GetHeaderEvent(CKBHeader);
-    event NotGetHeaderEvent();
-
-    function getHeader(bytes32 blockHash) public returns (CKBHeader memory) {
-        // axon_precompile_address(0x02)
-        address get_header_addr = address(0x0102);
-        (bool isSuccess, bytes memory res) = get_header_addr.staticcall(
-            abi.encode(blockHash)
-        );
-
-        CKBHeader memory header;
-        if (isSuccess) {
-            header = abi.decode(res, (CKBHeader));
-            /*
-            replace above decode into the following data can pass test
-            header = CKBHeader({
-                version: 0,
-                compactTarget: 0,
-                timestamp: 0,
-                number: 0,
-                epoch: 0,
-                parentHash: bytes32(0),
-                transactionsRoot: 0x7c57536c95df426f5477c344f8f949e4dfd25443d6f586b4f350ae3e4b870433,
-                proposalsHash: bytes32(0),
-                extraHash: bytes32(0),
-                dao: bytes32(0),
-                nonce: uint128(0),
-                extension: "",
-                blockHash: bytes32(0)
-            });
-            */
-            emit GetHeaderEvent(header);
-        } else {
-            emit NotGetHeaderEvent();
-        }
-        return header;
-    }
+function getHeader(bytes32 blockHash) view returns (CKBHeader memory) {
+    // axon_precompile_address(0x02)
+    address get_header_addr = address(0x0102);
+    (bool isSuccess, bytes memory res) = get_header_addr.staticcall(
+        abi.encode(blockHash)
+    );
+    require(isSuccess, "getHeader");
+    return abi.decode(res, (CKBHeader));
 }
-
-using CkbLightClient for bytes32;
 
 // Define ckb blake2b
 function blake2b(bytes memory data) view returns (bytes32) {
     // axon_precompile_address(0x06)
     address blake2b_addr = address(0x0106);
     (bool isSuccess, bytes memory res) = blake2b_addr.staticcall(data);
-
-    bytes32 hash;
-    if (isSuccess) {
-        hash = abi.decode(res, (bytes32));
-    }
-    return hash;
+    require(isSuccess, "blake2b");
+    return abi.decode(res, (bytes32));
 }
 
 function ckbMbtVerify(VerifyProofPayload memory payload) view returns (bool) {
@@ -118,11 +82,7 @@ function ckbMbtVerify(VerifyProofPayload memory payload) view returns (bool) {
     (bool isSuccess, bytes memory res) = ckb_mbt_addr.staticcall(
         abi.encode(payload)
     );
-
-    if (!isSuccess) {
-        return false;
-    }
-
+    require(isSuccess, "ckbMbtVerify");
     return uint8(res[0]) == 1;
 }
 
@@ -284,7 +244,7 @@ library CkbProof {
         bytes calldata rlpiEncodedProof,
         bytes memory path,
         bytes calldata value
-    ) public returns (bool) {
+    ) internal view returns (bool) {
         // Parse the proof from the abi encoded data
         AxonObjectProof memory axonObjProof = decodeAxonObjectProof(
             rlpiEncodedProof
@@ -304,7 +264,7 @@ library CkbProof {
         }
 
         // Get the CKB header
-        CKBHeader memory header = axonObjProof.blockHash.getHeader();
+        CKBHeader memory header = getHeader(axonObjProof.blockHash);
 
         // Create the VerifyProofPayload
         VerifyProofPayload memory payload = VerifyProofPayload({
@@ -326,6 +286,8 @@ library CkbProof {
         );
 
         // Check if the commitment path/value matches the provided path/value
-        return isCommitInCommitments(commitments, path, value);
+        require(isCommitInCommitments(commitments, path, value), "commitment mismatch");
+
+        return true;
     }
 }
