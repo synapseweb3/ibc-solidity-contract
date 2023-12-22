@@ -66,9 +66,9 @@ contract MockClient is ILightClient {
      * @dev getTimestampAtHeight returns the timestamp of the consensus state at the given height.
      */
     function getTimestampAtHeight(
-        string calldata clientId,
-        Height.Data calldata height
-    ) external view override returns (uint64, bool) {
+        string calldata,
+        Height.Data calldata
+    ) external pure override returns (uint64, bool) {
         return (9223372036854775807, true);
     }
 
@@ -76,7 +76,7 @@ contract MockClient is ILightClient {
      * @dev getLatestHeight returns the latest height of the client state corresponding to `clientId`.
      */
     function getLatestHeight(
-        string calldata clientId
+        string calldata
     ) external pure override returns (Height.Data memory, bool) {
         return (Height.Data({revisionNumber: 0, revisionHeight: 9999}), true);
     }
@@ -90,10 +90,11 @@ contract MockClient is ILightClient {
      * 5. persist the state(s) on the host
      */
     function updateClient(
-        string calldata clientId,
-        bytes calldata clientMessageBytes
+        string calldata,
+        bytes calldata
     )
         external
+        pure
         override
         returns (
             bytes32 clientStateCommitment,
@@ -109,15 +110,15 @@ contract MockClient is ILightClient {
      * The caller is expected to construct the full CommitmentPath from a CommitmentPrefix and a standardized path (as defined in ICS 24).
      */
     function verifyMembership(
-        string calldata clientId,
-        Height.Data calldata height,
+        string calldata,
+        Height.Data calldata,
         uint64,
         uint64,
-        bytes calldata proof,
+        bytes calldata,
         bytes memory,
         bytes memory,
-        bytes calldata value
-    ) external view override returns (bool) {
+        bytes calldata
+    ) external pure override returns (bool) {
         return true;
     }
 
@@ -126,14 +127,14 @@ contract MockClient is ILightClient {
      * The caller is expected to construct the full CommitmentPath from a CommitmentPrefix and a standardized path (as defined in ICS 24).
      */
     function verifyNonMembership(
-        string calldata clientId,
-        Height.Data calldata height,
+        string calldata,
+        Height.Data calldata,
         uint64,
         uint64,
-        bytes calldata proof,
+        bytes calldata,
         bytes memory,
         bytes memory
-    ) external view override returns (bool) {
+    ) external pure override returns (bool) {
         return true;
     }
 
@@ -160,7 +161,7 @@ contract MockClient is ILightClient {
      */
     function getConsensusState(
         string calldata clientId,
-        Height.Data calldata height
+        Height.Data calldata
     ) external view returns (bytes memory consensusStateBytes, bool) {
         string memory result = string.concat(
             clientId,
